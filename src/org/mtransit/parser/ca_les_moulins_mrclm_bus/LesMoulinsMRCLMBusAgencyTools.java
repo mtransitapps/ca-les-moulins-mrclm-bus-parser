@@ -85,6 +85,20 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		return MSpec.cleanLabel(routeLongName);
 	}
 
+	@Override
+	public String getRouteShortName(GRoute gRoute) {
+		Matcher matcher = DIGITS.matcher(gRoute.route_short_name);
+		matcher.find();
+		return matcher.group();
+	}
+
+	@Override
+	public long getRouteId(GRoute gRoute) {
+		Matcher matcher = DIGITS.matcher(gRoute.route_id);
+		matcher.find();
+		return Integer.parseInt(matcher.group());
+	}
+
 	private static final String AGENCY_COLOR = "99CC00"; // green
 
 	@Override
@@ -96,15 +110,42 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	public void setTripHeadsign(MRoute route, MTrip mTrip, GTrip gTrip) {
 		String stationName = cleanTripHeadsign(gTrip.trip_headsign);
 		int directionId = Integer.valueOf(gTrip.direction_id);
+		if (route.id == 5l) {
+			stationName = "Bois-Des-Filion <-> Terrebonne";
+		} else if (route.id == 20l) {
+			stationName = "Mascouche <-> Terrebonne";
+		} else if (route.id == 23l) {
+			if (directionId == 0) {
+				stationName = "Terminus Terrebonne";
+			} else {
+				stationName = "Cégep";
+			}
+		} else if (route.id == 24l) {
+			if (directionId == 0) {
+				stationName = "Terminus Terrebonne (Cégep)";
+			}
+		} else if (route.id == 25l) {
+			if (directionId == 1) {
+				stationName = "Henri-Bourassa";
+			}
+		}
 		mTrip.setHeadsignString(stationName, directionId);
 	}
 
 	private static final Pattern DIRECTION = Pattern.compile("(direction )", Pattern.CASE_INSENSITIVE);
 	private static final String DIRECTION_REPLACEMENT = "";
 
+	private static final Pattern CHEMIN = Pattern.compile("(chemin )", Pattern.CASE_INSENSITIVE);
+	private static final String CHEMIN_REPLACEMENT = "";
+
+	private static final Pattern PARCOURS = Pattern.compile("(parcours )", Pattern.CASE_INSENSITIVE);
+	private static final String PARCOURS_REPLACEMENT = "";
+
 	@Override
 	public String cleanTripHeadsign(String tripHeadsign) {
 		tripHeadsign = DIRECTION.matcher(tripHeadsign).replaceAll(DIRECTION_REPLACEMENT);
+		tripHeadsign = CHEMIN.matcher(tripHeadsign).replaceAll(CHEMIN_REPLACEMENT);
+		tripHeadsign = PARCOURS.matcher(tripHeadsign).replaceAll(PARCOURS_REPLACEMENT);
 		return MSpec.cleanLabelFR(tripHeadsign);
 	}
 
