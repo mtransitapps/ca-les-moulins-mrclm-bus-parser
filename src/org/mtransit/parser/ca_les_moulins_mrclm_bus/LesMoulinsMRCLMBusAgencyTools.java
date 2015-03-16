@@ -105,7 +105,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public void setTripHeadsign(MRoute route, MTrip mTrip, GTrip gTrip) {
 		String stationName = cleanTripHeadsign(gTrip.trip_headsign);
-		int directionId = Integer.valueOf(gTrip.direction_id);
+		int directionId = gTrip.direction_id;
 		if (route.id == 5l) {
 			stationName = "Bois-Des-Filion <-> Terrebonne";
 		} else if (route.id == 20l) {
