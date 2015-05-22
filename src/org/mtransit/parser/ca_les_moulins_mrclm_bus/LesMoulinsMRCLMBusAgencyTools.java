@@ -9,6 +9,7 @@ import org.mtransit.parser.Utils;
 import org.mtransit.parser.gtfs.data.GCalendar;
 import org.mtransit.parser.gtfs.data.GCalendarDate;
 import org.mtransit.parser.gtfs.data.GRoute;
+import org.mtransit.parser.gtfs.data.GSpec;
 import org.mtransit.parser.gtfs.data.GStop;
 import org.mtransit.parser.gtfs.data.GTrip;
 import org.mtransit.parser.mt.data.MAgency;
@@ -102,30 +103,36 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		return AGENCY_COLOR;
 	}
 
+	private static final String HENRI_BOURASSA = "Henri-Bourassa";
+	private static final String TERMINUS_TERREBONNE_CÉGEP = "Terminus Terrebonne (Cégep)";
+	private static final String CÉGEP = "Cégep";
+	private static final String TERMINUS_TERREBONNE = "Terminus Terrebonne";
+	private static final String MASCOUCHE_TERREBONNE = "Mascouche <-> Terrebonne";
+	private static final String BOIS_DES_FILION_TERREBONNE = "Bois-Des-Filion <-> Terrebonne";
+
 	@Override
-	public void setTripHeadsign(MRoute route, MTrip mTrip, GTrip gTrip) {
+	public void setTripHeadsign(MRoute mRoute, MTrip mTrip, GTrip gTrip, GSpec gtfs) {
 		String stationName = cleanTripHeadsign(gTrip.trip_headsign);
-		int directionId = gTrip.direction_id;
-		if (route.id == 5l) {
-			stationName = "Bois-Des-Filion <-> Terrebonne";
-		} else if (route.id == 20l) {
-			stationName = "Mascouche <-> Terrebonne";
-		} else if (route.id == 23l) {
-			if (directionId == 0) {
-				stationName = "Terminus Terrebonne";
+		if (mRoute.id == 5l) {
+			stationName = BOIS_DES_FILION_TERREBONNE;
+		} else if (mRoute.id == 20l) {
+			stationName = MASCOUCHE_TERREBONNE;
+		} else if (mRoute.id == 23l) {
+			if (gTrip.direction_id == 0) {
+				stationName = TERMINUS_TERREBONNE;
 			} else {
-				stationName = "Cégep";
+				stationName = CÉGEP;
 			}
-		} else if (route.id == 24l) {
-			if (directionId == 0) {
-				stationName = "Terminus Terrebonne (Cégep)";
+		} else if (mRoute.id == 24l) {
+			if (gTrip.direction_id == 0) {
+				stationName = TERMINUS_TERREBONNE_CÉGEP;
 			}
-		} else if (route.id == 25l) {
-			if (directionId == 1) {
-				stationName = "Henri-Bourassa";
+		} else if (mRoute.id == 25l) {
+			if (gTrip.direction_id == 1) {
+				stationName = HENRI_BOURASSA;
 			}
 		}
-		mTrip.setHeadsignString(stationName, directionId);
+		mTrip.setHeadsignString(stationName, gTrip.direction_id);
 	}
 
 	private static final Pattern DIRECTION = Pattern.compile("(direction )", Pattern.CASE_INSENSITIVE);
@@ -180,6 +187,9 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public int getStopId(GStop gStop) {
+		if (gStop.stop_id.equals("LPL105A")) {
+			return 84315;
+		}
 		String stopCode = getStopCode(gStop);
 		if (stopCode != null && stopCode.length() > 0) {
 			return Integer.valueOf(stopCode); // using stop code as stop ID
@@ -210,5 +220,4 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		}
 		return stopId + digits;
 	}
-
 }
