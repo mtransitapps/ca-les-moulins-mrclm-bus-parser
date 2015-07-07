@@ -14,7 +14,7 @@ import org.mtransit.parser.gtfs.data.GStop;
 import org.mtransit.parser.gtfs.data.GTrip;
 import org.mtransit.parser.mt.data.MAgency;
 import org.mtransit.parser.mt.data.MRoute;
-import org.mtransit.parser.mt.data.MSpec;
+import org.mtransit.parser.CleanUtils;
 import org.mtransit.parser.mt.data.MTrip;
 
 // https://www.amt.qc.ca/en/about/open-data
@@ -35,11 +35,11 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public void start(String[] args) {
-		System.out.printf("Generating MRCLM bus data...\n");
+		System.out.printf("\nGenerating MRCLM bus data...\n");
 		long start = System.currentTimeMillis();
 		this.serviceIds = extractUsefulServiceIds(args, this);
 		super.start(args);
-		System.out.printf("Generating MRCLM bus data... DONE in %s.\n", Utils.getPrettyDuration(System.currentTimeMillis() - start));
+		System.out.printf("\nGenerating MRCLM bus data... DONE in %s.\n", Utils.getPrettyDuration(System.currentTimeMillis() - start));
 	}
 
 	@Override
@@ -77,9 +77,9 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public String getRouteLongName(GRoute gRoute) {
 		String routeLongName = gRoute.route_long_name;
-		routeLongName = MSpec.SAINT.matcher(routeLongName).replaceAll(MSpec.SAINT_REPLACEMENT);
+		routeLongName = CleanUtils.SAINT.matcher(routeLongName).replaceAll(CleanUtils.SAINT_REPLACEMENT);
 		routeLongName = SECTEUR.matcher(routeLongName).replaceAll(SECTEUR_REPLACEMENT);
-		return MSpec.cleanLabel(routeLongName);
+		return CleanUtils.cleanLabel(routeLongName);
 	}
 
 	@Override
@@ -149,7 +149,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		tripHeadsign = DIRECTION.matcher(tripHeadsign).replaceAll(DIRECTION_REPLACEMENT);
 		tripHeadsign = CHEMIN.matcher(tripHeadsign).replaceAll(CHEMIN_REPLACEMENT);
 		tripHeadsign = PARCOURS.matcher(tripHeadsign).replaceAll(PARCOURS_REPLACEMENT);
-		return MSpec.cleanLabelFR(tripHeadsign);
+		return CleanUtils.cleanLabelFR(tripHeadsign);
 	}
 
 	private static final Pattern START_WITH_FACE_A = Pattern.compile("^(face à )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
@@ -170,8 +170,8 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public String cleanStopName(String gStopName) {
 		gStopName = AVENUE.matcher(gStopName).replaceAll(AVENUE_REPLACEMENT);
-		gStopName = Utils.replaceAll(gStopName, START_WITH_FACES, MSpec.SPACE);
-		gStopName = Utils.replaceAll(gStopName, SPACE_FACES, MSpec.SPACE);
+		gStopName = Utils.replaceAll(gStopName, START_WITH_FACES, CleanUtils.SPACE);
+		gStopName = Utils.replaceAll(gStopName, SPACE_FACES, CleanUtils.SPACE);
 		return super.cleanStopNameFR(gStopName);
 	}
 
