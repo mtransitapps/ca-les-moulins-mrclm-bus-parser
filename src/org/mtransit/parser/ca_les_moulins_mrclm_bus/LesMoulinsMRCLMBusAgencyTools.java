@@ -314,33 +314,33 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public ArrayList<MTrip> splitTrip(MRoute mRoute, GTrip gTrip, GSpec gtfs) {
-		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.id)) {
-			return ALL_ROUTE_TRIPS2.get(mRoute.id).getAllTrips();
+		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
+			return ALL_ROUTE_TRIPS2.get(mRoute.getId()).getAllTrips();
 		}
 		return super.splitTrip(mRoute, gTrip, gtfs);
 	}
 
 	@Override
 	public Pair<Long[], Integer[]> splitTripStop(MRoute mRoute, GTrip gTrip, GTripStop gTripStop, ArrayList<MTrip> splitTrips, GSpec routeGTFS) {
-		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.id)) {
-			return SplitUtils.splitTripStop(mRoute, gTrip, gTripStop, routeGTFS, ALL_ROUTE_TRIPS2.get(mRoute.id));
+		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
+			return SplitUtils.splitTripStop(mRoute, gTrip, gTripStop, routeGTFS, ALL_ROUTE_TRIPS2.get(mRoute.getId()));
 		}
 		return super.splitTripStop(mRoute, gTrip, gTripStop, splitTrips, routeGTFS);
 	}
 
 	@Override
 	public void setTripHeadsign(MRoute mRoute, MTrip mTrip, GTrip gTrip, GSpec gtfs) {
-		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.id)) {
+		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
 			return; // split
 		}
-		if (mRoute.id == 18l) {
+		if (mRoute.getId() == 18l) {
 			if (gTrip.getDirectionId() == 0) {
 				mTrip.setHeadsignString("CW", gTrip.getDirectionId());
 			} else if (gTrip.getDirectionId() == 1) {
 				mTrip.setHeadsignString("CCW", gTrip.getDirectionId());
 				return;
 			}
-		} else if (mRoute.id == 21l) {
+		} else if (mRoute.getId() == 21l) {
 			String gTripHeadsignLC = gTrip.getTripHeadsign().toLowerCase(Locale.ENGLISH);
 			if (gTripHeadsignLC.endsWith("mascouche")) {
 				mTrip.setHeadsignString(MASCOUCHE, 0);
