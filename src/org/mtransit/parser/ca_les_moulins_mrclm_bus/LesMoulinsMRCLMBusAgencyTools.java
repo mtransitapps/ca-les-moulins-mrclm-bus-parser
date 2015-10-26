@@ -206,7 +206,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 								"TER111A", "TER14A", //
 								"TER224B", "TER14C", //
 								"TER15D", //
-								"TER5E", "MAS6G" })) //
+								"LCN315A"/* "TER5E" */, "MAS6G" })) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
 						Arrays.asList(new String[] { "MAS6G", "TER20H", //
 								"TER14B", //
@@ -225,7 +225,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 								"MAS231D", "MAS234A", //
 								"MAS346B", "MAS58B" })) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { "MAS58B", "LCN52C", "TER179D" })) //
+						Arrays.asList(new String[] { "MAS58B", /* "LCN52C" */"LCN156C", "TER179D" })) //
 				.compileBothTripSort());
 		map2.put(3l, new RouteTripSpec(3l, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE, //
@@ -284,7 +284,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE, //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { "TER5E", "MAS6G", //
+						Arrays.asList(new String[] { /* "TER5E" */"LCN315A", "MAS6G", //
 								"TER14B", //
 								"TER110A", "TER224D", //
 								"TER111C", //
