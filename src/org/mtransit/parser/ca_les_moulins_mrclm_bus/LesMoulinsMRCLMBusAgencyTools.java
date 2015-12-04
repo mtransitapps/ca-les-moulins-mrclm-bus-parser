@@ -276,9 +276,20 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE, //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MONTREAL) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { "MTL6C", "MTN19C", "LVL9A", "TER2A", "TER179D" })) //
+						Arrays.asList(new String[] { "MTL6C", //
+								"MTN6C", //
+								"MTN6A", //
+								"MTN19C", //
+								"MTN20A", "LVL9A", //
+								"TER2A", "TER179D" })) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { "TER179D", "TER2C", "LVL7B", "MTN19C", "MTN12C", "MTL2B", "MTL6C" })) //
+						Arrays.asList(new String[] { "TER179D", //
+								"TER2C", "LVL7B", //
+								"MTN19C", // old
+								"MTN6C", //
+								"MTN12C", //
+								"MTN12C", //
+								"MTL2B", "MTL6C" })) //
 				.compileBothTripSort());
 		map2.put(41l, new RouteTripSpec(41l, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE, //
