@@ -189,10 +189,11 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 
 	private static final String BOIS_DES_FILION = "Bois-Des-Filion";
 	private static final String MASCOUCHE = "Mascouche";
-	private static final String MONTREAL = "Montréal";
 	private static final String TERREBONNE = "Terrebonne";
+	private static final String HENRI_BOURASSA = "Henri-Bourassa";
 	private static final String CÉGEP = "Cégep";
 	private static final String TERREBONNE_OUEST = TERREBONNE + " Ouest";
+	private static final String TERMINUS_HENRI_BOURASSA = "Terminus " + HENRI_BOURASSA;
 	private static final String TERMINUS_TERREBONNE = "Terminus " + TERREBONNE;
 	private static HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
 	static {
@@ -204,7 +205,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 						Arrays.asList(new String[] { "TER179D", //
 								"TER13B", //
 								"TER111A", "TER14A", //
-								"TER224B", "TER14C", //
+								"TER224B", "TER236A", "TER14C", //
 								"TER15D", //
 								"LCN315A"/* "TER5E" */, "MAS6G" })) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
@@ -271,25 +272,6 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 						Arrays.asList(new String[] { "STR11C", "TER5C", "TER179D" })) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
 						Arrays.asList(new String[] { "TER179D", "TER133A", "STR11C" })) //
-				.compileBothTripSort());
-		map2.put(25l, new RouteTripSpec(25l, //
-				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE, //
-				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MONTREAL) //
-				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { "MTL6C", //
-								"MTN6C", //
-								"MTN6A", //
-								"MTN19C", //
-								"MTN20A", "LVL9A", //
-								"TER2A", "TER179D" })) //
-				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { "TER179D", //
-								"TER2C", "LVL7B", //
-								"MTN19C", // old
-								"MTN6C", //
-								"MTN12C", //
-								"MTN12C", //
-								"MTL2B", "MTL6C" })) //
 				.compileBothTripSort());
 		map2.put(41l, new RouteTripSpec(41l, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE, //
@@ -365,6 +347,19 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 			return;
 		}
 		mTrip.setHeadsignString(cleanTripHeadsign(gTrip.getTripHeadsign()), gTrip.getDirectionId());
+	}
+
+	@Override
+	public boolean mergeHeadsign(MTrip mTrip, MTrip mTripToMerge) {
+		if (mTrip.getRouteId() == 25l) {
+			if (mTrip.getHeadsignId() == 1) {
+				mTrip.setHeadsignString(TERMINUS_HENRI_BOURASSA, mTrip.getHeadsignId());
+				return true;
+			}
+		}
+		System.out.printf("\nUnexpected trips to merge %s & %s!\n", mTrip, mTripToMerge);
+		System.exit(-1);
+		return false;
 	}
 
 	private static final Pattern DIRECTION = Pattern.compile("(direction )", Pattern.CASE_INSENSITIVE);
