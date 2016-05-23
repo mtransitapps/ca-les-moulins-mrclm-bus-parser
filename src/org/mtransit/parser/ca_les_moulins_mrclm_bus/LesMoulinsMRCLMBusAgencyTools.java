@@ -205,7 +205,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 						Arrays.asList(new String[] { "TER179D", //
 								"TER13B", //
 								"TER111A", "TER14A", //
-								"TER224B", "TER236A", "TER14C", //
+								"TER224B", "TER236A", "TER109A", "TER14C", //
 								"TER15D", //
 								"LCN315A"/* "TER5E" */, "MAS6G" })) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
@@ -226,7 +226,9 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 								"MAS231D", "MAS234A", //
 								"MAS346B", "MAS58B" })) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { "MAS58B", /* "LCN52C" */"LCN156C", "TER179D" })) //
+						Arrays.asList(new String[] { "MAS58B", //
+								"LCN156C", "LCN156C_merged_102030408", //
+								"TER179D" })) //
 				.compileBothTripSort());
 		map2.put(3l, new RouteTripSpec(3l, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE, //
@@ -245,9 +247,13 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE, //
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, BOIS_DES_FILION) //
 				.addTripSort(MDirectionType.EAST.intValue(), //
-						Arrays.asList(new String[] { "BDF12A", "TER129D", "TER179D" })) //
+						Arrays.asList(new String[] { //
+						"BDF12A", "BDF12A_merged_102030407", //
+								"TER129D", "TER179D" })) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
-						Arrays.asList(new String[] { "TER179D", "BDF4C", "BDF12A" })) //
+						Arrays.asList(new String[] { "TER179D", "BDF4C", //
+								"BDF12A", "BDF12A_merged_102030407" //
+						})) //
 				.compileBothTripSort());
 		map2.put(9l, new RouteTripSpec(9l, //
 				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERMINUS_TERREBONNE, //
@@ -290,7 +296,10 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE, //
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, BOIS_DES_FILION) //
 				.addTripSort(MDirectionType.EAST.intValue(), //
-						Arrays.asList(new String[] { "BDF16A", "BDF12A", "TER179D" })) //
+						Arrays.asList(new String[] { //
+						"BDF16A", //
+								"BDF12A", "BDF12A_merged_102030407", //
+								"TER179D" })) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
 						Arrays.asList(new String[] { /* no stops */})) //
 				.compileBothTripSort());
