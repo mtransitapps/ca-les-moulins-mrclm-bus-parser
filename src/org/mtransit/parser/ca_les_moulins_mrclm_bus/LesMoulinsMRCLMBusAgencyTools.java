@@ -227,7 +227,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 								"MAS346B", "MAS58B" })) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
 						Arrays.asList(new String[] { "MAS58B", //
-								"LCN156C", "LCN156C_merged_102030408", //
+								"LCN156C", "LCN156C_merged_102030413", //
 								"TER179D" })) //
 				.compileBothTripSort());
 		map2.put(3l, new RouteTripSpec(3l, //
@@ -248,11 +248,11 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, BOIS_DES_FILION) //
 				.addTripSort(MDirectionType.EAST.intValue(), //
 						Arrays.asList(new String[] { //
-						"BDF12A", "BDF12A_merged_102030407", //
+						"BDF12A", "BDF12A_merged_102030412", //
 								"TER129D", "TER179D" })) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
 						Arrays.asList(new String[] { "TER179D", "BDF4C", //
-								"BDF12A", "BDF12A_merged_102030407" //
+								"BDF12A", "BDF12A_merged_102030412" //
 						})) //
 				.compileBothTripSort());
 		map2.put(9l, new RouteTripSpec(9l, //
@@ -297,8 +297,8 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, BOIS_DES_FILION) //
 				.addTripSort(MDirectionType.EAST.intValue(), //
 						Arrays.asList(new String[] { //
-						"BDF16A", //
-								"BDF12A", "BDF12A_merged_102030407", //
+						"TER247A", "BDF16C", //
+								"BDF12A", "BDF12A_merged_102030412", //
 								"TER179D" })) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
 						Arrays.asList(new String[] { /* no stops */})) //
