@@ -360,7 +360,12 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public boolean mergeHeadsign(MTrip mTrip, MTrip mTripToMerge) {
-		if (mTrip.getRouteId() == 25l) {
+		if (mTrip.getRouteId() == 11l) {
+			if (mTrip.getHeadsignId() == 1) {
+				mTrip.setHeadsignString(TERMINUS_TERREBONNE, mTrip.getHeadsignId());
+				return true;
+			}
+		} else if (mTrip.getRouteId() == 25l) {
 			if (mTrip.getHeadsignId() == 1) {
 				mTrip.setHeadsignString(TERMINUS_HENRI_BOURASSA, mTrip.getHeadsignId());
 				return true;
