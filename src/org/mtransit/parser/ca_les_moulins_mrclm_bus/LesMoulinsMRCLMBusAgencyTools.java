@@ -169,6 +169,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 			case 45: return "684B1F";
 			case 48: return "C79EC9";
 			case 55: return "000000";
+			case 57: return "000000";
 			case 124: return "000000";
 			case 125: return "000000";
 			case 140: return "A85A29";
@@ -259,9 +260,13 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERMINUS_TERREBONNE, //
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE_OUEST) //
 				.addTripSort(MDirectionType.EAST.intValue(), //
-						Arrays.asList(new String[] { "TER260B", /* "TER395C", */"TER281D", /* "TER105D", */"TER179D" })) //
+						Arrays.asList(new String[] { //
+						"TER260B", "BDF47D", "TER179D" //
+						})) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
-						Arrays.asList(new String[] { "TER179D", /* "TER37C", "TER104B", */"TER281D", /* "TER105D", */"TER260B" })) //
+						Arrays.asList(new String[] { //
+						"TER179D", "BDF47B", "TER260B" //
+						})) //
 				.compileBothTripSort());
 		map2.put(20l, new RouteTripSpec(20l, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE, //
