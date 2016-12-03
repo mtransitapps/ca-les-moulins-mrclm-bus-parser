@@ -340,14 +340,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
 			return; // split
 		}
-		if (mRoute.getId() == 18l) {
-			if (gTrip.getDirectionId() == 0) {
-				mTrip.setHeadsignString("CW", gTrip.getDirectionId());
-			} else if (gTrip.getDirectionId() == 1) {
-				mTrip.setHeadsignString("CCW", gTrip.getDirectionId());
-				return;
-			}
-		} else if (mRoute.getId() == 21l) {
+		if (mRoute.getId() == 21l) {
 			String gTripHeadsignLC = gTrip.getTripHeadsign().toLowerCase(Locale.ENGLISH);
 			if (gTripHeadsignLC.endsWith("mascouche")) {
 				mTrip.setHeadsignString(MASCOUCHE, 0);
@@ -443,28 +436,36 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 			return Integer.valueOf(stopCode); // using stop code as stop ID
 		}
 		Matcher matcher = DIGITS.matcher(gStop.getStopId());
-		matcher.find();
-		int digits = Integer.parseInt(matcher.group());
-		int stopId;
-		if (gStop.getStopId().startsWith("MAS")) {
-			stopId = 100000;
-		} else {
-			System.out.println("Stop doesn't have an ID (start with)! " + gStop);
-			System.exit(-1);
-			stopId = -1;
+		if (matcher.find()) {
+			int digits = Integer.parseInt(matcher.group());
+			int stopId;
+			if (gStop.getStopId().startsWith("MAS")) {
+				stopId = 100000;
+			} else if (gStop.getStopId().startsWith("TER")) {
+				stopId = 200000;
+			} else {
+				System.out.printf("\nStop doesn't have an ID (start with) %s!\n", gStop);
+				System.exit(-1);
+				stopId = -1;
+			}
+			if (gStop.getStopId().endsWith("A")) {
+				stopId += 1000;
+			} else if (gStop.getStopId().endsWith("B")) {
+				stopId += 2000;
+			} else if (gStop.getStopId().endsWith("C")) {
+				stopId += 3000;
+			} else if (gStop.getStopId().endsWith("D")) {
+				stopId += 4000;
+			} else if (gStop.getStopId().endsWith("G")) {
+				stopId += 7000;
+			} else {
+				System.out.printf("\nStop doesn't have an ID (end with) %s!\n", gStop);
+				System.exit(-1);
+			}
+			return stopId + digits;
 		}
-		if (gStop.getStopId().endsWith("A")) {
-			stopId += 1000;
-		} else if (gStop.getStopId().endsWith("B")) {
-			stopId += 2000;
-		} else if (gStop.getStopId().endsWith("C")) {
-			stopId += 3000;
-		} else if (gStop.getStopId().endsWith("D")) {
-			stopId += 4000;
-		} else {
-			System.out.println("Stop doesn't have an ID (end with)! " + gStop);
-			System.exit(-1);
-		}
-		return stopId + digits;
+		System.out.printf("\nUnexpected stop ID for %s!\n", gStop);
+		System.exit(-1);
+		return -1;
 	}
 }
