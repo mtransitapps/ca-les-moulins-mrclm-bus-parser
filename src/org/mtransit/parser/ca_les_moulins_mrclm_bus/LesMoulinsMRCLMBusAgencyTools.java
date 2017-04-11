@@ -30,7 +30,7 @@ import org.mtransit.parser.mt.data.MTrip;
 import org.mtransit.parser.mt.data.MTripStop;
 
 // https://www.amt.qc.ca/en/about/open-data
-// http://www.amt.qc.ca/xdata/mrclm/google_transit.zip
+// https://www.amt.qc.ca/xdata/mrclm/google_transit.zip
 public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 
 	public static void main(String[] args) {
@@ -261,11 +261,17 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE_OUEST) //
 				.addTripSort(MDirectionType.EAST.intValue(), //
 						Arrays.asList(new String[] { //
-						"TER260B", "BDF47D", "TER179D" //
+						"TER260B", // ch. St-Roch / rue Lamothe
+								"BDF47D", // != montée Gagnon / ch. du Souvenir
+								"BDF12A", // != ch. du Souvenir / montée Gagnon
+								"BDF4A", // == ch. Adolphe-Chapleau / 38e avenue sud
+								"TER179D", // Terminus Terrebonne
 						})) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
 						Arrays.asList(new String[] { //
-						"TER179D", "BDF47B", "TER260B" //
+						"TER179D", // Terminus Terrebonne
+								"BDF47B", // montée Gagnon / ch. du Souvenir
+								"TER260B", // ch. St-Roch / rue Lamothe
 						})) //
 				.compileBothTripSort());
 		map2.put(20l, new RouteTripSpec(20l, //
@@ -358,13 +364,20 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 
 	@Override
 	public boolean mergeHeadsign(MTrip mTrip, MTrip mTripToMerge) {
+		List<String> headsignsValues = Arrays.asList(mTrip.getHeadsignValue(), mTripToMerge.getHeadsignValue());
 		if (mTrip.getRouteId() == 11l) {
-			if (mTrip.getHeadsignId() == 1) {
+			if (Arrays.asList( //
+					"Cité Du Sport", //
+					TERMINUS_TERREBONNE //
+					).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString(TERMINUS_TERREBONNE, mTrip.getHeadsignId());
 				return true;
 			}
 		} else if (mTrip.getRouteId() == 25l) {
-			if (mTrip.getHeadsignId() == 1) {
+			if (Arrays.asList( //
+					"St-Julien / Amos", //
+					TERMINUS_HENRI_BOURASSA //
+					).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString(TERMINUS_HENRI_BOURASSA, mTrip.getHeadsignId());
 				return true;
 			}
