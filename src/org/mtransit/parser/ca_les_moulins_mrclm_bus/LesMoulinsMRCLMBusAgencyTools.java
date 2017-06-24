@@ -29,8 +29,8 @@ import org.mtransit.parser.mt.data.MRoute;
 import org.mtransit.parser.mt.data.MTrip;
 import org.mtransit.parser.mt.data.MTripStop;
 
-// https://www.amt.qc.ca/en/about/open-data
-// https://www.amt.qc.ca/xdata/mrclm/google_transit.zip
+// https://rtm.quebec/en/about/open-data
+// https://rtm.quebec/xdata/mrclm/google_transit.zip
 public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 
 	public static void main(String[] args) {
@@ -244,16 +244,25 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 								"LCN79C", //
 								"TER179D" })) //
 				.compileBothTripSort());
-		map2.put(5l, new RouteTripSpec(5l, //
+		map2.put(5L, new RouteTripSpec(5L, //
 				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE, //
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, BOIS_DES_FILION) //
 				.addTripSort(MDirectionType.EAST.intValue(), //
 						Arrays.asList(new String[] { //
-						"BDF12A", "BDF12A_merged_102030412", //
-								"TER129D", "TER179D" })) //
+						"BDF12A", "BDF12A_merged_102030412", // ch. du Souvenir / montée Gagnon
+								"TER129D", // ++
+								"TER179D", // Terminus Terrebonne
+						})) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
-						Arrays.asList(new String[] { "TER179D", "BDF4C", //
-								"BDF12A", "BDF12A_merged_102030412" //
+						Arrays.asList(new String[] { //
+						"TER179D", // Terminus Terrebonne
+								"BDF4C", // ch. Adolphe-Chapleau / 38e avenue sud
+								"BDF19D", // ++
+								"TER247A", // ++
+								"TER250B", // rue Fernand-Poitras / boul. Industriel
+								"TER508C", // ++
+								"BDF19C", // ++
+								"BDF12A", "BDF12A_merged_102030412" // ch. du Souvenir / montée Gagnon
 						})) //
 				.compileBothTripSort());
 		map2.put(9l, new RouteTripSpec(9l, //
