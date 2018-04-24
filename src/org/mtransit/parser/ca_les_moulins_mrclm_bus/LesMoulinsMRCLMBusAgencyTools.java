@@ -102,8 +102,12 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 			return RSN_24C;
 		}
 		Matcher matcher = DIGITS.matcher(gRoute.getRouteShortName());
-		matcher.find();
-		return matcher.group();
+		if (matcher.find()) {
+			return matcher.group();
+		}
+		System.out.printf("\nUnexpected route short name for %s!\n", gRoute);
+		System.exit(-1);
+		return null;
 	}
 
 	@Override
@@ -115,8 +119,12 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 			return Long.parseLong(gRoute.getRouteShortName());
 		}
 		Matcher matcher = DIGITS.matcher(gRoute.getRouteId());
-		matcher.find();
-		return Long.parseLong(matcher.group());
+		if (matcher.find()) {
+			return Long.parseLong(matcher.group());
+		}
+		System.out.printf("\nUnexpected route ID for %s!\n", gRoute);
+		System.exit(-1);
+		return -1L;
 	}
 
 	private static final String AGENCY_COLOR = "99CC00"; // green
@@ -133,53 +141,54 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 				return "754740";
 			}
 			Matcher matcher = DIGITS.matcher(gRoute.getRouteId());
-			matcher.find();
-			int rid = Integer.parseInt(matcher.group());
-			switch (rid) {
-			// @formatter:off
-			case 1: return "1A5846";
-			case 2: return "EC2F48";
-			case 3: return "EC2F48";
-			case 4: return "EC008C";
-			case 5: return "E46D1E";
-			case 6: return "000000";
-			case 8: return "231F20";
-			case 9: return "B3CB2D";
-			case 11: return "26ABDF";
-			case 14: return "9FA1A4";
-			case 15: return "F6ABC9";
-			case 16: return "9C3F97";
-			case 17: return "F6ABC9";
-			case 18: return "F8B43A";
-			case 19: return "8AB5E1";
-			case 20: return "028C5B";
-			case 21: return "1D407D";
-			case 22: return "92B02C";
-			case 23: return "A0092D";
-			case 24: return "2A465A";
-			case 25: return "26225C";
-			case 26: return "000000";
-			case 27: return "008EBE";
-			case 30: return "6F6D70";
-			case 35: return "26225C";
-			case 40: return "811B55";
-			case 41: return "C19708";
-			case 42: return "08B6AD";
-			case 43: return "08B6AD";
-			case 45: return "684B1F";
-			case 48: return "C79EC9";
-			case 55: return "000000";
-			case 57: return "000000";
-			case 124: return "000000";
-			case 125: return "000000";
-			case 140: return "A85A29";
-			case 403: return "A71F67";
-			case 411: return "38BEAC";
-			case 417: return "0096A9";
-			case 418: return "5D6335";
-			case 427: return "778937";
-			case 440: return "5F7975";
-			// @formatter:on
+			if (matcher.find()) {
+				int rid = Integer.parseInt(matcher.group());
+				switch (rid) {
+				// @formatter:off
+				case 1: return "1A5846";
+				case 2: return "EC2F48";
+				case 3: return "EC2F48";
+				case 4: return "EC008C";
+				case 5: return "E46D1E";
+				case 6: return "000000";
+				case 8: return "231F20";
+				case 9: return "B3CB2D";
+				case 11: return "26ABDF";
+				case 14: return "9FA1A4";
+				case 15: return "F6ABC9";
+				case 16: return "9C3F97";
+				case 17: return "F6ABC9";
+				case 18: return "F8B43A";
+				case 19: return "8AB5E1";
+				case 20: return "028C5B";
+				case 21: return "1D407D";
+				case 22: return "92B02C";
+				case 23: return "A0092D";
+				case 24: return "2A465A";
+				case 25: return "26225C";
+				case 26: return "000000";
+				case 27: return "008EBE";
+				case 30: return "6F6D70";
+				case 35: return "26225C";
+				case 40: return "811B55";
+				case 41: return "C19708";
+				case 42: return "08B6AD";
+				case 43: return "08B6AD";
+				case 45: return "684B1F";
+				case 48: return "C79EC9";
+				case 55: return "000000";
+				case 57: return "000000";
+				case 124: return "000000";
+				case 125: return "000000";
+				case 140: return "A85A29";
+				case 403: return "A71F67";
+				case 411: return "38BEAC";
+				case 417: return "0096A9";
+				case 418: return "5D6335";
+				case 427: return "778937";
+				case 440: return "5F7975";
+				// @formatter:on
+				}
 			}
 			System.out.printf("\nUnexpected route color %s!\n", gRoute);
 			System.exit(-1);
@@ -203,53 +212,66 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE, //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { "TER179D", //
+						Arrays.asList(new String[] { //
+						"TER179D", //
 								"TER13B", //
 								"TER111A", "TER14A", //
 								"TER224B", "TER236A", "TER109A", "TER14C", //
 								"TER15D", //
-								"LCN315A"/* "TER5E" */, "MAS6G" })) //
+								"LCN315A"/* "TER5E" */, "MAS6G" //
+						})) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { "MAS6G", "TER20H", //
+						Arrays.asList(new String[] { //
+						"MAS6G", "TER20H", //
 								"TER14B", //
 								"TER110A", "TER224D", //
 								"TER111C", //
 								"TER13D", //
-								"TER179D" })) //
+								"TER179D" //
+						})) //
 				.compileBothTripSort());
 		map2.put(2l, new RouteTripSpec(2l, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE, //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { "TER179D", //
+						Arrays.asList(new String[] { //
+						"TER179D", //
 								"MAS132L", //
 								"MAS176A", "MAS234D", //
 								"MAS231D", "MAS234A", //
-								"MAS346B", "MAS58B" })) //
+								"MAS346B", "MAS58B", //
+						})) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { "MAS58B", //
-								"LCN156C", "LCN156C_merged_102030413", //
-								"TER179D" })) //
+						Arrays.asList(new String[] { //
+						"MAS58B", //
+								/* "LCN52C" *///
+								"LCN156C", //
+								"TER179D", //
+						})) //
 				.compileBothTripSort());
 		map2.put(3l, new RouteTripSpec(3l, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE, //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { "TER179D", "MAS3A", "MAS58D" })) //
+						Arrays.asList(new String[] { //
+						"TER179D", "MAS3A", "MAS58D" //
+						})) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { "MAS58D", "MAS46A", //
+						Arrays.asList(new String[] { //
+						"MAS58D", "MAS46A", //
 								"MAS234B", //
 								"MAS232C", "MAS231B", //
 								"MAS176C", "MAS173C", //
 								"LCN79C", //
-								"TER179D" })) //
+								"TER179D", //
+						})) //
 				.compileBothTripSort());
 		map2.put(5L, new RouteTripSpec(5L, //
 				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE, //
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, BOIS_DES_FILION) //
 				.addTripSort(MDirectionType.EAST.intValue(), //
 						Arrays.asList(new String[] { //
-						"BDF12A", "BDF12A_merged_102030412", // ch. du Souvenir / montée Gagnon
+						"BDF12A", // ch. du Souvenir / montée Gagnon
 								"TER129D", // ++
 								"TER179D", // Terminus Terrebonne
 						})) //
@@ -262,7 +284,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 								"TER250B", // rue Fernand-Poitras / boul. Industriel
 								"TER508C", // ++
 								"BDF19C", // ++
-								"BDF12A", "BDF12A_merged_102030412" // ch. du Souvenir / montée Gagnon
+								"BDF12A", // ch. du Souvenir / montée Gagnon
 						})) //
 				.compileBothTripSort());
 		map2.put(9l, new RouteTripSpec(9l, //
@@ -287,28 +309,50 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE, //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { "TER179D", "MAS233A", "MAS172A" })) //
+						Arrays.asList(new String[] { //
+						"TER179D", "MAS233A", "MAS172A" //
+						})) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { "MAS172A", "MAS49C", "TER179D" })) //
+						Arrays.asList(new String[] { //
+						"MAS172A", "MAS49C", "TER179D" //
+						})) //
 				.compileBothTripSort());
-		map2.put(23l, new RouteTripSpec(23l, //
+		map2.put(23L, new RouteTripSpec(23L, //
 				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERMINUS_TERREBONNE, //
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, CÉGEP) //
 				.addTripSort(MDirectionType.EAST.intValue(), //
-						Arrays.asList(new String[] { "STR11C", "TER5C", "TER179D" })) //
+						Arrays.asList(new String[] { //
+						"STR11C", // "84697" Cégep Lionel-Groulx
+								"STR8C", // !=
+								"STR20D", // ==
+								"TER5C", // ++
+								"TER61C", // ==
+								"TER65C", // !=
+								"TER75C", // !=
+								"TER159K", // ==
+								"TER179D", // "84875" Terminus Terrebonne
+						})) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
-						Arrays.asList(new String[] { "TER179D", "TER133A", "STR11C" })) //
+						Arrays.asList(new String[] { //
+						"TER179D", // "84875" Terminus Terrebonne
+								"TER133A", // ++
+								"STR20B", // ==
+								"STR8A", // !=
+								"STR11C", // "84697" Cégep Lionel-Groulx
+						})) //
 				.compileBothTripSort());
 		map2.put(41l, new RouteTripSpec(41l, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE, //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { /* "TER5E" */"LCN315A", "MAS6G", //
+						Arrays.asList(new String[] { //
+						/* "TER5E" */"LCN315A", "MAS6G", //
 								"TER14B", //
 								"TER110A", "TER224D", //
 								"TER111C", //
 								"TER13D", //
-								"TER179D" })) //
+								"TER179D" //
+						})) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
 						Arrays.asList(new String[] { /* no stops */})) //
 				.compileBothTripSort());
@@ -318,8 +362,9 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 				.addTripSort(MDirectionType.EAST.intValue(), //
 						Arrays.asList(new String[] { //
 						"TER247A", "BDF16C", //
-								"BDF12A", "BDF12A_merged_102030412", //
-								"TER179D" })) //
+								"BDF12A", //
+								"TER179D" //
+						})) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
 						Arrays.asList(new String[] { /* no stops */})) //
 				.compileBothTripSort());
@@ -327,9 +372,15 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	}
 
 	@Override
+	public String cleanStopOriginalId(String gStopId) {
+		gStopId = CleanUtils.cleanMergedID(gStopId);
+		return gStopId;
+	}
+
+	@Override
 	public int compareEarly(long routeId, List<MTripStop> list1, List<MTripStop> list2, MTripStop ts1, MTripStop ts2, GStop ts1GStop, GStop ts2GStop) {
 		if (ALL_ROUTE_TRIPS2.containsKey(routeId)) {
-			return ALL_ROUTE_TRIPS2.get(routeId).compare(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop);
+			return ALL_ROUTE_TRIPS2.get(routeId).compare(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop, this);
 		}
 		return super.compareEarly(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop);
 	}
@@ -345,7 +396,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public Pair<Long[], Integer[]> splitTripStop(MRoute mRoute, GTrip gTrip, GTripStop gTripStop, ArrayList<MTrip> splitTrips, GSpec routeGTFS) {
 		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
-			return SplitUtils.splitTripStop(mRoute, gTrip, gTripStop, routeGTFS, ALL_ROUTE_TRIPS2.get(mRoute.getId()));
+			return SplitUtils.splitTripStop(mRoute, gTrip, gTripStop, routeGTFS, ALL_ROUTE_TRIPS2.get(mRoute.getId()), this);
 		}
 		return super.splitTripStop(mRoute, gTrip, gTripStop, splitTrips, routeGTFS);
 	}
