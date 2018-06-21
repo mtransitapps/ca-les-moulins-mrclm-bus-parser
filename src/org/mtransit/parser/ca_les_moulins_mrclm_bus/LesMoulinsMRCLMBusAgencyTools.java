@@ -94,37 +94,59 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		return CleanUtils.cleanLabel(routeLongName);
 	}
 
-	private static final String RSN_24C = "24C";
-
 	@Override
 	public String getRouteShortName(GRoute gRoute) {
-		if (RSN_24C.equalsIgnoreCase(gRoute.getRouteShortName())) {
-			return RSN_24C;
-		}
-		Matcher matcher = DIGITS.matcher(gRoute.getRouteShortName());
-		if (matcher.find()) {
-			return matcher.group();
-		}
-		System.out.printf("\nUnexpected route short name for %s!\n", gRoute);
-		System.exit(-1);
-		return null;
+		return super.getRouteShortName(gRoute);
 	}
+
+	private static final String B = "B";
+	private static final String C = "C";
+	private static final String G = "G";
+	private static final String T = "T";
+
+	private static final long RID_ENDS_WITH_B = 2_000L;
+	private static final long RID_ENDS_WITH_C = 3_000L;
+	private static final long RID_ENDS_WITH_G = 7_000L;
+
+	private static final long RID_STARTS_WITH_T = 20_000L;
+
+	private static final String RSN_EXPH = "EXPH";
+	private static final String RSN_EXPM = "EXPM";
+	private static final String RSN_EXPR = "EXPR";
+
+	private static final long RID_EXPH = 99001L;
+	private static final long RID_EXPM = 99002L;
+	private static final long RID_EXPR = 99003L;
 
 	@Override
 	public long getRouteId(GRoute gRoute) {
-		if (RSN_24C.equalsIgnoreCase(gRoute.getRouteShortName())) {
-			return 3000l + 24l;
+		if (!Utils.isDigitsOnly(gRoute.getRouteId())) {
+			if (RSN_EXPH.equalsIgnoreCase(gRoute.getRouteShortName())) {
+				return RID_EXPH;
+			} else if (RSN_EXPM.equalsIgnoreCase(gRoute.getRouteShortName())) {
+				return RID_EXPM;
+			} else if (RSN_EXPR.equalsIgnoreCase(gRoute.getRouteShortName())) {
+				return RID_EXPR;
+			}
+			Matcher matcher = DIGITS.matcher(gRoute.getRouteShortName());
+			if (matcher.find()) {
+				int digits = Integer.parseInt(matcher.group());
+				if (gRoute.getRouteShortName().startsWith(T)) {
+					return RID_STARTS_WITH_T + digits;
+				}
+				if (gRoute.getRouteShortName().endsWith(B)) {
+					return RID_ENDS_WITH_B + digits;
+				} else if (gRoute.getRouteShortName().endsWith(C)) {
+					return RID_ENDS_WITH_C + digits;
+				} else if (gRoute.getRouteShortName().endsWith(G)) {
+					return RID_ENDS_WITH_G + digits;
+				}
+			}
+			System.out.printf("\nUnexpected route ID for %s!\n", gRoute);
+			System.exit(-1);
+			return -1L;
 		}
-		if (Utils.isDigitsOnly(gRoute.getRouteShortName())) {
-			return Long.parseLong(gRoute.getRouteShortName());
-		}
-		Matcher matcher = DIGITS.matcher(gRoute.getRouteId());
-		if (matcher.find()) {
-			return Long.parseLong(matcher.group());
-		}
-		System.out.printf("\nUnexpected route ID for %s!\n", gRoute);
-		System.exit(-1);
-		return -1L;
+		return super.getRouteId(gRoute);
 	}
 
 	private static final String AGENCY_COLOR = "99CC00"; // green
@@ -137,7 +159,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public String getRouteColor(GRoute gRoute) {
 		if (StringUtils.isEmpty(gRoute.getRouteColor())) {
-			if (RSN_24C.equalsIgnoreCase(gRoute.getRouteShortName())) {
+			if ("24C".equalsIgnoreCase(gRoute.getRouteShortName())) {
 				return "754740";
 			}
 			Matcher matcher = DIGITS.matcher(gRoute.getRouteId());
@@ -208,62 +230,68 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	private static HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
 	static {
 		HashMap<Long, RouteTripSpec> map2 = new HashMap<Long, RouteTripSpec>();
-		map2.put(1l, new RouteTripSpec(1l, //
+		map2.put(1L, new RouteTripSpec(1L, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE, //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
 						Arrays.asList(new String[] { //
-						"TER179D", //
-								"TER13B", //
-								"TER111A", "TER14A", //
-								"TER224B", "TER236A", "TER109A", "TER14C", //
-								"TER15D", //
-								"LCN315A"/* "TER5E" */, "MAS6G" //
+						"84875", // Terminus Terrebonne
+								"84800", // == boul. des Seigneurs / rue Plaisance
+								"84744", // !=
+								"84819", // !=
+								"85147", // !=
+								"85527", // !=
+								"84844", // == rue de Verviers / rue Aragon
+								"84994", // ch. des Anglais / ch. Gascon
+								"85073", // rue des Bois-Francs / ch. Pincourt #MASCOUCHE
 						})) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
 						Arrays.asList(new String[] { //
-						"MAS6G", "TER20H", //
-								"TER14B", //
-								"TER110A", "TER224D", //
-								"TER111C", //
-								"TER13D", //
-								"TER179D" //
+						"85073", // rue des Bois-Francs / ch. Pincourt #MASCOUCHE
+								"84924", // ch. Gascon / rue de la Pinière
+								"84820", // == rue de Verviers / rue Plaisance
+								"84742", // !=
+								"85148", // !=
+								"84745", // !=
+								"84801", // == boul. des Seigneurs / rue Plaisance
+								"84875", // Terminus Terrebonne
 						})) //
 				.compileBothTripSort());
-		map2.put(2l, new RouteTripSpec(2l, //
+		map2.put(2L, new RouteTripSpec(2L, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE, //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
 						Arrays.asList(new String[] { //
-						"TER179D", //
-								"MAS132L", //
-								"MAS176A", "MAS234D", //
-								"MAS231D", "MAS234A", //
-								"MAS346B", "MAS58B", //
+						"84875", // Terminus Terrebonne
+								"85353", // avenue de l'Esplanade / avenue de la Gare
+								"84140", // ch. des Anglais / boul. Ste-Marie
 						})) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
 						Arrays.asList(new String[] { //
-						"MAS58B", //
-								/* "LCN52C" *///
-								"LCN156C", //
-								"TER179D", //
+						"84140", // ch. des Anglais / boul. Ste-Marie
+								"84142", // ch. des Anglais / rue O'Diana
+								"84875", // Terminus Terrebonne
 						})) //
 				.compileBothTripSort());
-		map2.put(3l, new RouteTripSpec(3l, //
+		map2.put(3L, new RouteTripSpec(3L, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE, //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
 						Arrays.asList(new String[] { //
-						"TER179D", "MAS3A", "MAS58D" //
+						"84875", // Terminus Terrebonne
+								"84536", // ch. des Anglais / rue Rawlinson
+								"84570", // ch. des Anglais / boul. Ste-Marie
 						})) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
 						Arrays.asList(new String[] { //
-						"MAS58D", "MAS46A", //
-								"MAS234B", //
-								"MAS232C", "MAS231B", //
-								"MAS176C", "MAS173C", //
-								"LCN79C", //
-								"TER179D", //
+						"84570", // ch. des Anglais / boul. Ste-Marie
+								"84362", // == avenue de l'Esplanade / rue Bohémier
+								"85773", // !=
+								"85183", // !=
+								"84251", // !=
+								"84144", // !=
+								"85054", // == boul. des Seigneurs / rue J.-F.-Kennedy
+								"84875", // Terminus Terrebonne
 						})) //
 				.compileBothTripSort());
 		map2.put(5L, new RouteTripSpec(5L, //
@@ -271,50 +299,95 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, BOIS_DES_FILION) //
 				.addTripSort(MDirectionType.EAST.intValue(), //
 						Arrays.asList(new String[] { //
-						"BDF12A", // ch. du Souvenir / montée Gagnon
-								"TER129D", // ++
-								"TER179D", // Terminus Terrebonne
+						"84006", // montée Gagnon / ch. du Souvenir
+								"84855", // ++
+								"84875", // Terminus Terrebonne
 						})) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
 						Arrays.asList(new String[] { //
-						"TER179D", // Terminus Terrebonne
-								"BDF4C", // ch. Adolphe-Chapleau / 38e avenue sud
-								"BDF19D", // ++
-								"TER247A", // ++
-								"TER250B", // rue Fernand-Poitras / boul. Industriel
-								"TER508C", // ++
-								"BDF19C", // ++
-								"BDF12A", // ch. du Souvenir / montée Gagnon
+						"84875", // Terminus Terrebonne
+								"84013", // == ch. Adolphe-Chapleau / 38e avenue sud
+								"85521", // !=
+								"85520", // != boul. Industriel / rue Jacques Paschini
+								"84006", // montée Gagnon / ch. du Souvenir
 						})) //
 				.compileBothTripSort());
-		map2.put(9l, new RouteTripSpec(9l, //
+		map2.put(8L, new RouteTripSpec(8L, //
+				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Angora / Hansen", //
+				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERMINUS_TERREBONNE) //
+				.addTripSort(MDirectionType.NORTH.intValue(), //
+						Arrays.asList(new String[] { //
+						"84875", // Terminus Terrebonne
+								"84988", // rue de Grandchamps / boul. de Hauteville
+								"84833", // rue Angora / rue Hansen
+						})) //
+				.addTripSort(MDirectionType.SOUTH.intValue(), //
+						Arrays.asList(new String[] { //
+						"84833", // rue Angora / rue Hansen
+								"85030", // ++
+								"84875", // Terminus Terrebonne
+						})) //
+				.compileBothTripSort());
+		map2.put(9L, new RouteTripSpec(9L, //
 				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERMINUS_TERREBONNE, //
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE_OUEST) //
 				.addTripSort(MDirectionType.EAST.intValue(), //
 						Arrays.asList(new String[] { //
-						"TER260B", // ch. St-Roch / rue Lamothe
-								"BDF47D", // != montée Gagnon / ch. du Souvenir
-								"BDF12A", // != ch. du Souvenir / montée Gagnon
-								"BDF4A", // == ch. Adolphe-Chapleau / 38e avenue sud
-								"TER179D", // Terminus Terrebonne
+						"85509", // ch. St-Roch / rue Lamothe
+								"84878", // Montée Gagnon / du Souvenir
+								"84875", // Terminus Terrebonne
 						})) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
 						Arrays.asList(new String[] { //
-						"TER179D", // Terminus Terrebonne
-								"BDF47B", // montée Gagnon / ch. du Souvenir
-								"TER260B", // ch. St-Roch / rue Lamothe
+						"84875", // Terminus Terrebonne
+								"84879", // Montée Gagnon / du Souvenir
+								"85509", // ch. St-Roch / rue Lamothe
 						})) //
 				.compileBothTripSort());
-		map2.put(20l, new RouteTripSpec(20l, //
+		map2.put(18L, new RouteTripSpec(18L, //
+				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERMINUS_TERREBONNE, //
+				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Cité du Sport") //
+				.addTripSort(MDirectionType.EAST.intValue(), //
+						Arrays.asList(new String[] { //
+						"85782", // Cité du Sport
+								"84106", // rue des Bâtisseurs / face au 3100
+								// "84872", // ++
+								"84728", // ==
+								"85117", // !=== !=
+								"85482", // != <>
+								"85144", // != !=
+								"85030", // !===
+								"84889", // !===
+								"84837", // !===
+								"84875", // == Terminus Terrebonne
+						})) //
+				.addTripSort(MDirectionType.WEST.intValue(), //
+						Arrays.asList(new String[] { //
+						"84875", // == Terminus Terrebonne
+								"84943", // !=== boul. des Seigneurs / rue Vaillant
+								"85117", // != !=
+								"85482", // != <>
+								"84726", // !=== boul. Claude Léveillée / face au McDonald
+								"84845", // !=== boul. Moody / face aux Galeries Terrebonne
+								"84998", // != rue Angora / ch. Gasco
+								"85150", // !=== boul. des Entreprises / boul. Claude Léveillée
+								"85782", // == Cité du Sport
+						})) //
+				.compileBothTripSort());
+		map2.put(20L, new RouteTripSpec(20L, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE, //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
 						Arrays.asList(new String[] { //
-						"TER179D", "MAS233A", "MAS172A" //
+						"84875", // Terminus Terrebonne
+								"85179", // ++
+								"84467", // boul. St-Henri / face au 1533
 						})) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
 						Arrays.asList(new String[] { //
-						"MAS172A", "MAS49C", "TER179D" //
+						"84467", // boul. St-Henri / face au 1533
+								"84553", // ++
+								"84875", // Terminus Terrebonne
 						})) //
 				.compileBothTripSort());
 		map2.put(23L, new RouteTripSpec(23L, //
@@ -322,51 +395,99 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, CÉGEP) //
 				.addTripSort(MDirectionType.EAST.intValue(), //
 						Arrays.asList(new String[] { //
-						"STR11C", // "84697" Cégep Lionel-Groulx
-								"STR8C", // !=
-								"STR20D", // ==
-								"TER5C", // ++
-								"TER61C", // ==
-								"TER65C", // !=
-								"TER75C", // !=
-								"TER159K", // ==
-								"TER179D", // "84875" Terminus Terrebonne
+						"84697", // == Cégep Lionel-Groulx
+								"84718", // !=
+								"85424", // ==
+								"84875", // Terminus Terrebonne
 						})) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
 						Arrays.asList(new String[] { //
-						"TER179D", // "84875" Terminus Terrebonne
-								"TER133A", // ++
-								"STR20B", // ==
-								"STR8A", // !=
-								"STR11C", // "84697" Cégep Lionel-Groulx
+						"84875", // Terminus Terrebonne
+								"85423", // ==
+								"84717", // !=
+								"84697", // == Cégep Lionel-Groulx
 						})) //
 				.compileBothTripSort());
-		map2.put(41l, new RouteTripSpec(41l, //
+		map2.put(24L + RID_STARTS_WITH_T, new RouteTripSpec(24L + RID_STARTS_WITH_T, // T24
+				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Gascon", // Terrebonne
+				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Place Longchamps") // Terrebonne
+				.addTripSort(MDirectionType.EAST.intValue(), //
+						Arrays.asList(new String[] { //
+						"85125", // ch. Martin / montée Valiquette
+								"85135", // ++
+								"84870", // ch. Gascon / face au 3620
+						})) //
+				.addTripSort(MDirectionType.WEST.intValue(), //
+						Arrays.asList(new String[] { //
+						"85131", // Comptois / Gascon (Restaurant au nid garni )
+								"85134", // ++
+								"85126", // montée Valiquette / ch. Martin
+						})) //
+				.compileBothTripSort());
+		map2.put(26L + RID_STARTS_WITH_T, new RouteTripSpec(26L + RID_STARTS_WITH_T, // T26
+				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, "St-Philippe & Tedford", // Mascouche
+				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, "St-Henri") // Mascouche
+				.addTripSort(MDirectionType.NORTH.intValue(), //
+						Arrays.asList(new String[] { //
+						"84467", // boul. St-Henri / face au 1533
+								"84902", // ++
+								"84909", // Saint-Philippe Ouest / Tedford
+						})) //
+				.addTripSort(MDirectionType.SOUTH.intValue(), //
+						Arrays.asList(new String[] { //
+						"84910", // Saint-Philippe Ouest / Tedford
+								"84913", // ++
+								"84467", // boul. St-Henri / face au 1533
+						})) //
+				.compileBothTripSort());
+		map2.put(41L, new RouteTripSpec(41L, //
 				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE, //
 				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE) //
 				.addTripSort(MDirectionType.NORTH.intValue(), //
 						Arrays.asList(new String[] { //
-						/* "TER5E" */"LCN315A", "MAS6G", //
-								"TER14B", //
-								"TER110A", "TER224D", //
-								"TER111C", //
-								"TER13D", //
-								"TER179D" //
+						"84994", // ch. des Anglais / ch. Gascon
+								"84820", // ==
+								"84742", // !=
+								"84801", // !=
+								"84745", // !=
+								"84727", // !=
+								"85043", // ==
+								"84875", // Terminus Terrebonne
 						})) //
 				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { /* no stops */})) //
+						Arrays.asList(new String[] { //
+						/* no stops */
+						})) //
 				.compileBothTripSort());
-		map2.put(45l, new RouteTripSpec(45l, //
+		map2.put(45L, new RouteTripSpec(45L, //
 				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE, //
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, BOIS_DES_FILION) //
 				.addTripSort(MDirectionType.EAST.intValue(), //
 						Arrays.asList(new String[] { //
-						"TER247A", "BDF16C", //
-								"BDF12A", //
-								"TER179D" //
+						"85491", // rue Henry-Bessemer / rue Italia
+								"84006", // montée Gagnon / ch. du Souvenir
+								"84875", // Terminus Terrebonne
 						})) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
-						Arrays.asList(new String[] { /* no stops */})) //
+						Arrays.asList(new String[] { //
+						/* no stops */
+						})) //
+				.compileBothTripSort());
+		map2.put(403L, new RouteTripSpec(403L, //
+				0, MTrip.HEADSIGN_TYPE_STRING, "Gare Mascouche", //
+				1, MTrip.HEADSIGN_TYPE_STRING, "Anglais / Gascon") //
+				.addTripSort(0, // MDirectionType.EAST.intValue(), //
+						Arrays.asList(new String[] { //
+						"84994", // ch. des Anglais / ch. Gascon
+								"84570", // ++
+								"84700", // Gare Mascouche
+						})) //
+				.addTripSort(1, // MDirectionType.WEST.intValue(), //
+						Arrays.asList(new String[] { //
+						"84700", // Gare Mascouche
+								"84584", // ++
+								"84019", // ch des Anglais/ch. Gascon
+						})) //
 				.compileBothTripSort());
 		ALL_ROUTE_TRIPS2 = map2;
 	}
@@ -406,13 +527,27 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
 			return; // split
 		}
-		if (mRoute.getId() == 21l) {
+		if (mRoute.getId() == 14L) {
 			String gTripHeadsignLC = gTrip.getTripHeadsign().toLowerCase(Locale.ENGLISH);
-			if (gTripHeadsignLC.endsWith("mascouche")) {
-				mTrip.setHeadsignString(MASCOUCHE, 0);
+			if (gTripHeadsignLC.endsWith("forum de la plaine")) {
+				mTrip.setHeadsignString("Forum De La Plaine", gTrip.getDirectionId());
 				return;
 			} else if (gTripHeadsignLC.endsWith("terrebonne")) {
-				mTrip.setHeadsignString(TERREBONNE, 1);
+				mTrip.setHeadsignString(TERREBONNE, gTrip.getDirectionId());
+				return;
+			}
+			System.out.printf("\nUnexpected trip to split %s!\n", gTrip);
+			System.exit(-1);
+			return;
+		} else if (mRoute.getId() == 21L) {
+			String gTripHeadsignLC = gTrip.getTripHeadsign().toLowerCase(Locale.ENGLISH);
+			if (gTripHeadsignLC.endsWith("mascouche")) {
+				mTrip.setHeadsignString(MASCOUCHE, gTrip.getDirectionId());
+				return;
+			} else if (gTripHeadsignLC.endsWith("terrebonne") //
+					|| gTripHeadsignLC.endsWith("terrebonne am") //
+					|| gTripHeadsignLC.endsWith("terrebonne pm")) {
+				mTrip.setHeadsignString(TERREBONNE, gTrip.getDirectionId());
 				return;
 			}
 			System.out.printf("\nUnexpected trip to split %s!\n", gTrip);
@@ -425,15 +560,16 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public boolean mergeHeadsign(MTrip mTrip, MTrip mTripToMerge) {
 		List<String> headsignsValues = Arrays.asList(mTrip.getHeadsignValue(), mTripToMerge.getHeadsignValue());
-		if (mTrip.getRouteId() == 11l) {
+		if (mTrip.getRouteId() == 11L) {
 			if (Arrays.asList( //
+					"Lachenaie / Cegep Terrebonne", //
 					"Cité Du Sport", //
 					TERMINUS_TERREBONNE //
 					).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString(TERMINUS_TERREBONNE, mTrip.getHeadsignId());
 				return true;
 			}
-		} else if (mTrip.getRouteId() == 25l) {
+		} else if (mTrip.getRouteId() == 25L) {
 			if (Arrays.asList( //
 					"St-Julien / Amos", //
 					TERMINUS_HENRI_BOURASSA //
@@ -456,11 +592,19 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	private static final Pattern PARCOURS = Pattern.compile("(parcours )", Pattern.CASE_INSENSITIVE);
 	private static final String PARCOURS_REPLACEMENT = "";
 
+	private static final Pattern ENDS_WITH_AM_PM = Pattern.compile("( (am|pm)$)", Pattern.CASE_INSENSITIVE);
+	private static final String ENDS_WITH_AM_PM_REPLACEMENT = StringUtils.EMPTY;
+
 	@Override
 	public String cleanTripHeadsign(String tripHeadsign) {
+		if (Utils.isUppercaseOnly(tripHeadsign, true, true)) {
+			tripHeadsign = tripHeadsign.toLowerCase(Locale.FRENCH);
+		}
+		tripHeadsign = ENDS_WITH_AM_PM.matcher(tripHeadsign).replaceAll(ENDS_WITH_AM_PM_REPLACEMENT);
 		tripHeadsign = DIRECTION.matcher(tripHeadsign).replaceAll(DIRECTION_REPLACEMENT);
 		tripHeadsign = CHEMIN.matcher(tripHeadsign).replaceAll(CHEMIN_REPLACEMENT);
 		tripHeadsign = PARCOURS.matcher(tripHeadsign).replaceAll(PARCOURS_REPLACEMENT);
+		tripHeadsign = CleanUtils.CLEAN_ET.matcher(tripHeadsign).replaceAll(CleanUtils.CLEAN_ET_REPLACEMENT);
 		tripHeadsign = CleanUtils.cleanStreetTypesFRCA(tripHeadsign);
 		return CleanUtils.cleanLabelFR(tripHeadsign);
 	}
