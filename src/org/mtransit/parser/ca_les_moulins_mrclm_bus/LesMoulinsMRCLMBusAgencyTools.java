@@ -149,7 +149,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		return super.getRouteId(gRoute);
 	}
 
-	private static final String AGENCY_COLOR = "99CC00"; // green
+	private static final String AGENCY_COLOR = "1F1F1F"; // DARK GRAY (from GTFS)
 
 	@Override
 	public String getAgencyColor() {
