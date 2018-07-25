@@ -119,9 +119,9 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	private static final String RSN_EXPM = "EXPM";
 	private static final String RSN_EXPR = "EXPR";
 
-	private static final long RID_EXPH = 99001L;
-	private static final long RID_EXPM = 99002L;
-	private static final long RID_EXPR = 99003L;
+	private static final long RID_EXPH = 99_001L;
+	private static final long RID_EXPM = 99_002L;
+	private static final long RID_EXPR = 99_003L;
 
 	@Override
 	public long getRouteId(GRoute gRoute) {
@@ -224,14 +224,15 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		return super.getRouteColor(gRoute);
 	}
 
+	private static final String TERMINUS_SHORT = "Term";
 	private static final String BOIS_DES_FILION = "Bois-Des-Filion";
 	private static final String MASCOUCHE = "Mascouche";
 	private static final String TERREBONNE = "Terrebonne";
 	private static final String HENRI_BOURASSA = "Henri-Bourassa";
 	private static final String CÉGEP = "Cégep";
 	private static final String TERREBONNE_OUEST = TERREBONNE + " Ouest";
-	private static final String TERMINUS_HENRI_BOURASSA = "Terminus " + HENRI_BOURASSA;
-	private static final String TERMINUS_TERREBONNE = "Terminus " + TERREBONNE;
+	private static final String TERMINUS_HENRI_BOURASSA = TERMINUS_SHORT + " " + HENRI_BOURASSA;
+	private static final String TERMINUS_TERREBONNE = TERMINUS_SHORT + " " + TERREBONNE;
 	private static HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
 	static {
 		HashMap<Long, RouteTripSpec> map2 = new HashMap<Long, RouteTripSpec>();
@@ -594,6 +595,15 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	private static final Pattern CHEMIN = Pattern.compile("(chemin )", Pattern.CASE_INSENSITIVE);
 	private static final String CHEMIN_REPLACEMENT = "";
 
+	private static final Pattern EXPRESS_ = Pattern.compile("(expresse|express )", Pattern.CASE_INSENSITIVE);
+	private static final String EXPRESS_REPLACEMENT = "";
+
+	private static final Pattern VERS_ = Pattern.compile("(vers )", Pattern.CASE_INSENSITIVE);
+	private static final String VERS_REPLACEMENT = "";
+
+	private static final Pattern TERMINUS_ = Pattern.compile("(terminus )", Pattern.CASE_INSENSITIVE);
+	private static final String TERMINUS_REPLACEMENT = TERMINUS_SHORT + " ";
+
 	private static final Pattern PARCOURS = Pattern.compile("(parcours )", Pattern.CASE_INSENSITIVE);
 	private static final String PARCOURS_REPLACEMENT = "";
 
@@ -607,6 +617,9 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		}
 		tripHeadsign = ENDS_WITH_AM_PM.matcher(tripHeadsign).replaceAll(ENDS_WITH_AM_PM_REPLACEMENT);
 		tripHeadsign = DIRECTION.matcher(tripHeadsign).replaceAll(DIRECTION_REPLACEMENT);
+		tripHeadsign = EXPRESS_.matcher(tripHeadsign).replaceAll(EXPRESS_REPLACEMENT);
+		tripHeadsign = VERS_.matcher(tripHeadsign).replaceAll(VERS_REPLACEMENT);
+		tripHeadsign = TERMINUS_.matcher(tripHeadsign).replaceAll(TERMINUS_REPLACEMENT);
 		tripHeadsign = CHEMIN.matcher(tripHeadsign).replaceAll(CHEMIN_REPLACEMENT);
 		tripHeadsign = PARCOURS.matcher(tripHeadsign).replaceAll(PARCOURS_REPLACEMENT);
 		tripHeadsign = CleanUtils.CLEAN_ET.matcher(tripHeadsign).replaceAll(CleanUtils.CLEAN_ET_REPLACEMENT);
