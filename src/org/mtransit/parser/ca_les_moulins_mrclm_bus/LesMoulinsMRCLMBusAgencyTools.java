@@ -99,11 +99,6 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		return CleanUtils.cleanLabel(routeLongName);
 	}
 
-	@Override
-	public String getRouteShortName(GRoute gRoute) {
-		return super.getRouteShortName(gRoute);
-	}
-
 	private static final String B = "B";
 	private static final String C = "C";
 	private static final String G = "G";
@@ -233,6 +228,8 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	private static final String TERREBONNE_OUEST = TERREBONNE + " Ouest";
 	private static final String TERMINUS_HENRI_BOURASSA = TERMINUS_SHORT + " " + HENRI_BOURASSA;
 	private static final String TERMINUS_TERREBONNE = TERMINUS_SHORT + " " + TERREBONNE;
+	private static final String CITE_DU_SPORT = "Cite Du Sport";
+
 	private static HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
 	static {
 		HashMap<Long, RouteTripSpec> map2 = new HashMap<Long, RouteTripSpec>();
@@ -243,10 +240,11 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 						Arrays.asList(new String[] { //
 						"84875", // Terminus Terrebonne
 								"84800", // == boul. des Seigneurs / rue Plaisance
-								"84744", // !=
-								"84819", // !=
-								"85147", // !=
-								"85527", // !=
+								"84744", // !==
+								"84819", // !==
+								"85147", // !==
+								"84737", // != rue Cologne / rue de la Pinière
+								"85527", // !==
 								"84844", // == rue de Verviers / rue Aragon
 								"84994", // ch. des Anglais / ch. Gascon
 								"85073", // rue des Bois-Francs / ch. Pincourt #MASCOUCHE
@@ -570,6 +568,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 			if (Arrays.asList( //
 					"Lachenaie / Cegep Terrebonne", //
 					"Cité Du Sport", //
+					TERREBONNE + " " + CITE_DU_SPORT, //
 					TERMINUS_TERREBONNE //
 					).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString(TERMINUS_TERREBONNE, mTrip.getHeadsignId());
