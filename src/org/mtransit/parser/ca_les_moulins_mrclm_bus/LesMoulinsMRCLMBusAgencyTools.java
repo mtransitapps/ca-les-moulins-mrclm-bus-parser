@@ -332,22 +332,6 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 								"84875", // Terminus Terrebonne
 						})) //
 				.compileBothTripSort());
-		map2.put(9L, new RouteTripSpec(9L, //
-				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERMINUS_TERREBONNE, //
-				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE_OUEST) //
-				.addTripSort(MDirectionType.EAST.intValue(), //
-						Arrays.asList(new String[] { //
-						"85509", // ch. St-Roch / rue Lamothe
-								"84878", // Montée Gagnon / du Souvenir
-								"84875", // Terminus Terrebonne
-						})) //
-				.addTripSort(MDirectionType.WEST.intValue(), //
-						Arrays.asList(new String[] { //
-						"84875", // Terminus Terrebonne
-								"84879", // Montée Gagnon / du Souvenir
-								"85509", // ch. St-Roch / rue Lamothe
-						})) //
-				.compileBothTripSort());
 		map2.put(18L, new RouteTripSpec(18L, //
 				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERMINUS_TERREBONNE, //
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Cité du Sport") //
@@ -564,7 +548,15 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public boolean mergeHeadsign(MTrip mTrip, MTrip mTripToMerge) {
 		List<String> headsignsValues = Arrays.asList(mTrip.getHeadsignValue(), mTripToMerge.getHeadsignValue());
-		if (mTrip.getRouteId() == 11L) {
+		if (mTrip.getRouteId() == 9L) {
+			if (Arrays.asList( //
+					"Souvenir / Gagnon", //
+					"St-Roch / Lamothe" //
+			).containsAll(headsignsValues)) {
+				mTrip.setHeadsignString("St-Roch / Lamothe", mTrip.getHeadsignId());
+				return true;
+			}
+		} else if (mTrip.getRouteId() == 11L) {
 			if (Arrays.asList( //
 					"Lachenaie / Cegep Terrebonne", //
 					"Cité Du Sport", //
