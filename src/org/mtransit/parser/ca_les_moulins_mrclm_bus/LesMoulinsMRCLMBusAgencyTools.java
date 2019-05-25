@@ -104,11 +104,15 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	private static final String G = "G";
 	private static final String T = "T";
 
+	private static final String MT = "MT";
+
 	private static final long RID_ENDS_WITH_B = 2_000L;
 	private static final long RID_ENDS_WITH_C = 3_000L;
 	private static final long RID_ENDS_WITH_G = 7_000L;
 
 	private static final long RID_STARTS_WITH_T = 20_000L;
+
+	private static final long RID_STARTS_WITH_MT = 1_320_000L;
 
 	private static final String RSN_EXPH = "EXPH";
 	private static final String RSN_EXPM = "EXPM";
@@ -131,6 +135,9 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 			Matcher matcher = DIGITS.matcher(gRoute.getRouteShortName());
 			if (matcher.find()) {
 				int digits = Integer.parseInt(matcher.group());
+				if (gRoute.getRouteShortName().startsWith(MT)) {
+					return RID_STARTS_WITH_MT + digits;
+				}
 				if (gRoute.getRouteShortName().startsWith(T)) {
 					return RID_STARTS_WITH_T + digits;
 				}
@@ -225,7 +232,6 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	private static final String TERREBONNE = "Terrebonne";
 	private static final String HENRI_BOURASSA = "Henri-Bourassa";
 	private static final String CÉGEP = "Cégep";
-	private static final String TERREBONNE_OUEST = TERREBONNE + " Ouest";
 	private static final String TERMINUS_HENRI_BOURASSA = TERMINUS_SHORT + " " + HENRI_BOURASSA;
 	private static final String TERMINUS_TERREBONNE = TERMINUS_SHORT + " " + TERREBONNE;
 	private static final String CITE_DU_SPORT = "Cite Du Sport";
