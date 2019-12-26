@@ -49,7 +49,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	public void start(String[] args) {
 		System.out.printf("\nGenerating MRCLM bus data...");
 		long start = System.currentTimeMillis();
-		this.serviceIds = extractUsefulServiceIds(args, this);
+		this.serviceIds = extractUsefulServiceIds(args, this, true);
 		super.start(args);
 		System.out.printf("\nGenerating MRCLM bus data... DONE in %s.\n", Utils.getPrettyDuration(System.currentTimeMillis() - start));
 	}
@@ -578,6 +578,14 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 					TERMINUS_HENRI_BOURASSA //
 					).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString(TERMINUS_HENRI_BOURASSA, mTrip.getHeadsignId());
+				return true;
+			}
+		} else if (mTrip.getRouteId() == RID_STARTS_WITH_T + 55L) { // T55
+			if (Arrays.asList( //
+					"Terrebonne / Pinière & Sobeys", //
+					TERMINUS_TERREBONNE //
+					).containsAll(headsignsValues)) {
+				mTrip.setHeadsignString(TERMINUS_TERREBONNE, mTrip.getHeadsignId());
 				return true;
 			}
 		}
