@@ -390,15 +390,19 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 				.addTripSort(MDirectionType.EAST.intValue(), //
 						Arrays.asList(new String[] { //
 						"84697", // == Cégep Lionel-Groulx
+								"83711", // !=
 								"84718", // !=
 								"85424", // ==
+								"84924", // ==
 								"84875", // Terminus Terrebonne
 						})) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
 						Arrays.asList(new String[] { //
 						"84875", // Terminus Terrebonne
+								"84923", // ==
 								"85423", // ==
 								"84717", // !=
+								"83712", // !=
 								"84697", // == Cégep Lionel-Groulx
 						})) //
 				.compileBothTripSort());
