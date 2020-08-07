@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.mtransit.parser.CleanUtils;
 import org.mtransit.parser.DefaultAgencyTools;
+import org.mtransit.parser.MTLog;
 import org.mtransit.parser.Pair;
 import org.mtransit.parser.SplitUtils;
 import org.mtransit.parser.SplitUtils.RouteTripSpec;
@@ -43,15 +44,15 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		new LesMoulinsMRCLMBusAgencyTools().start(args);
 	}
 
-	private HashSet<String> serviceIds;
+	private HashSet<Integer> serviceIds;
 
 	@Override
 	public void start(String[] args) {
-		System.out.printf("\nGenerating MRCLM bus data...");
+		MTLog.log("Generating MRCLM bus data...");
 		long start = System.currentTimeMillis();
-		this.serviceIds = extractUsefulServiceIds(args, this, true);
+		this.serviceIds = extractUsefulServiceIdInts(args, this, true);
 		super.start(args);
-		System.out.printf("\nGenerating MRCLM bus data... DONE in %s.\n", Utils.getPrettyDuration(System.currentTimeMillis() - start));
+		MTLog.log("Generating MRCLM bus data... DONE in %s.", Utils.getPrettyDuration(System.currentTimeMillis() - start));
 	}
 
 	@Override
@@ -62,7 +63,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public boolean excludeCalendar(GCalendar gCalendar) {
 		if (this.serviceIds != null) {
-			return excludeUselessCalendar(gCalendar, this.serviceIds);
+			return excludeUselessCalendarInt(gCalendar, this.serviceIds);
 		}
 		return super.excludeCalendar(gCalendar);
 	}
@@ -70,7 +71,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public boolean excludeCalendarDate(GCalendarDate gCalendarDates) {
 		if (this.serviceIds != null) {
-			return excludeUselessCalendarDate(gCalendarDates, this.serviceIds);
+			return excludeUselessCalendarDateInt(gCalendarDates, this.serviceIds);
 		}
 		return super.excludeCalendarDate(gCalendarDates);
 	}
@@ -78,7 +79,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public boolean excludeTrip(GTrip gTrip) {
 		if (this.serviceIds != null) {
-			return excludeUselessTrip(gTrip, this.serviceIds);
+			return excludeUselessTripInt(gTrip, this.serviceIds);
 		}
 		return super.excludeTrip(gTrip);
 	}
@@ -149,9 +150,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 					return RID_ENDS_WITH_G + digits;
 				}
 			}
-			System.out.printf("\nUnexpected route ID for %s!\n", gRoute);
-			System.exit(-1);
-			return -1L;
+			throw new MTLog.Fatal("Unexpected route ID for %s!", gRoute);
 		}
 		return super.getRouteId(gRoute);
 	}
@@ -219,9 +218,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 				// @formatter:on
 				}
 			}
-			System.out.printf("\nUnexpected route color %s!\n", gRoute);
-			System.exit(-1);
-			return null;
+			throw new MTLog.Fatal("Unexpected route color %s!", gRoute);
 		}
 		return super.getRouteColor(gRoute);
 	}
@@ -239,106 +236,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	private static HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
 	static {
 		HashMap<Long, RouteTripSpec> map2 = new HashMap<Long, RouteTripSpec>();
-		map2.put(1L, new RouteTripSpec(1L, //
-				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE, //
-				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE) //
-				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { //
-						"84875", // Terminus Terrebonne
-								"84800", // == boul. des Seigneurs / rue Plaisance
-								"84744", // !==
-								"84819", // !==
-								"85147", // !==
-								"84737", // != rue Cologne / rue de la Pinière
-								"85527", // !==
-								"84844", // == rue de Verviers / rue Aragon
-								"84994", // ch. des Anglais / ch. Gascon
-								"85073", // rue des Bois-Francs / ch. Pincourt #MASCOUCHE
-						})) //
-				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { //
-						"85073", // rue des Bois-Francs / ch. Pincourt #MASCOUCHE
-								"84924", // ch. Gascon / rue de la Pinière
-								"84820", // == rue de Verviers / rue Plaisance
-								"84742", // !=
-								"85148", // !=
-								"84745", // !=
-								"84801", // == boul. des Seigneurs / rue Plaisance
-								"84875", // Terminus Terrebonne
-						})) //
-				.compileBothTripSort());
-		map2.put(2L, new RouteTripSpec(2L, //
-				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE, //
-				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE) //
-				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { //
-						"84875", // Terminus Terrebonne
-								"85353", // avenue de l'Esplanade / avenue de la Gare
-								"84140", // ch. des Anglais / boul. Ste-Marie
-						})) //
-				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { //
-						"84140", // ch. des Anglais / boul. Ste-Marie
-								"84142", // ch. des Anglais / rue O'Diana
-								"84875", // Terminus Terrebonne
-						})) //
-				.compileBothTripSort());
-		map2.put(3L, new RouteTripSpec(3L, //
-				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE, //
-				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE) //
-				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { //
-						"84875", // Terminus Terrebonne
-								"84536", // ch. des Anglais / rue Rawlinson
-								"84570", // ch. des Anglais / boul. Ste-Marie
-						})) //
-				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { //
-						"84570", // ch. des Anglais / boul. Ste-Marie
-								"84362", // == avenue de l'Esplanade / rue Bohémier
-								"85773", // !=
-								"85183", // !=
-								"84251", // !=
-								"84144", // !=
-								"85054", // == boul. des Seigneurs / rue J.-F.-Kennedy
-								"84875", // Terminus Terrebonne
-						})) //
-				.compileBothTripSort());
-		map2.put(5L, new RouteTripSpec(5L, //
-				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE, //
-				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, BOIS_DES_FILION) //
-				.addTripSort(MDirectionType.EAST.intValue(), //
-						Arrays.asList(new String[] { //
-						"84006", // montée Gagnon / ch. du Souvenir
-								"84855", // ++
-								"84875", // Terminus Terrebonne
-						})) //
-				.addTripSort(MDirectionType.WEST.intValue(), //
-						Arrays.asList(new String[] { //
-						"84875", // Terminus Terrebonne
-								"84013", // == ch. Adolphe-Chapleau / 38e avenue sud
-								"85521", // !=
-								"85520", // != boul. Industriel / rue Jacques Paschini
-								"84006", // montée Gagnon / ch. du Souvenir
-						})) //
-				.compileBothTripSort());
-		map2.put(8L, new RouteTripSpec(8L, //
-				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Angora / Hansen", //
-				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERMINUS_TERREBONNE) //
-				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { //
-						"84875", // Terminus Terrebonne
-								"84988", // rue de Grandchamps / boul. de Hauteville
-								"84833", // rue Angora / rue Hansen
-						})) //
-				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { //
-						"84833", // rue Angora / rue Hansen
-								"85030", // ++
-								"84875", // Terminus Terrebonne
-						})) //
-				.compileBothTripSort());
-		map2.put(18L, new RouteTripSpec(18L, //
+		map2.put(18L, new RouteTripSpec(18L, // BECAUSE SAME HEAD-SIGNs
 				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERMINUS_TERREBONNE, //
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Cité du Sport") //
 				.addTripSort(MDirectionType.EAST.intValue(), //
@@ -368,45 +266,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 								"85782", // == Cité du Sport
 						})) //
 				.compileBothTripSort());
-		map2.put(20L, new RouteTripSpec(20L, //
-				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE, //
-				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE) //
-				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { //
-						"84875", // Terminus Terrebonne
-								"85179", // ++
-								"84467", // boul. St-Henri / face au 1533
-						})) //
-				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { //
-						"84467", // boul. St-Henri / face au 1533
-								"84553", // ++
-								"84875", // Terminus Terrebonne
-						})) //
-				.compileBothTripSort());
-		map2.put(23L, new RouteTripSpec(23L, //
-				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERMINUS_TERREBONNE, //
-				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, CÉGEP) //
-				.addTripSort(MDirectionType.EAST.intValue(), //
-						Arrays.asList(new String[] { //
-						"84697", // == Cégep Lionel-Groulx
-								"83711", // !=
-								"84718", // !=
-								"85424", // ==
-								"84924", // ==
-								"84875", // Terminus Terrebonne
-						})) //
-				.addTripSort(MDirectionType.WEST.intValue(), //
-						Arrays.asList(new String[] { //
-						"84875", // Terminus Terrebonne
-								"84923", // ==
-								"85423", // ==
-								"84717", // !=
-								"83712", // !=
-								"84697", // == Cégep Lionel-Groulx
-						})) //
-				.compileBothTripSort());
-		map2.put(24L + RID_STARTS_WITH_T, new RouteTripSpec(24L + RID_STARTS_WITH_T, // T24
+		map2.put(24L + RID_STARTS_WITH_T, new RouteTripSpec(24L + RID_STARTS_WITH_T, // T24 // BECAUSe SAME HEAD-SIGNs
 				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Gascon", // Terrebonne
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Place Longchamps") // Terrebonne
 				.addTripSort(MDirectionType.EAST.intValue(), //
@@ -420,71 +280,6 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 						"85131", // Comptois / Gascon (Restaurant au nid garni )
 								"85134", // ++
 								"85126", // montée Valiquette / ch. Martin
-						})) //
-				.compileBothTripSort());
-		map2.put(26L + RID_STARTS_WITH_T, new RouteTripSpec(26L + RID_STARTS_WITH_T, // T26
-				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, "St-Philippe & Tedford", // Mascouche
-				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, "St-Henri") // Mascouche
-				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { //
-						"84467", // boul. St-Henri / face au 1533
-								"84902", // ++
-								"84909", // Saint-Philippe Ouest / Tedford
-						})) //
-				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { //
-						"84910", // Saint-Philippe Ouest / Tedford
-								"84913", // ++
-								"84467", // boul. St-Henri / face au 1533
-						})) //
-				.compileBothTripSort());
-		map2.put(41L, new RouteTripSpec(41L, //
-				MDirectionType.NORTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE, //
-				MDirectionType.SOUTH.intValue(), MTrip.HEADSIGN_TYPE_STRING, MASCOUCHE) //
-				.addTripSort(MDirectionType.NORTH.intValue(), //
-						Arrays.asList(new String[] { //
-						"84994", // ch. des Anglais / ch. Gascon
-								"84820", // ==
-								"84742", // !=
-								"84801", // !=
-								"84745", // !=
-								"84727", // !=
-								"85043", // ==
-								"84875", // Terminus Terrebonne
-						})) //
-				.addTripSort(MDirectionType.SOUTH.intValue(), //
-						Arrays.asList(new String[] { //
-						/* no stops */
-						})) //
-				.compileBothTripSort());
-		map2.put(45L, new RouteTripSpec(45L, //
-				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERREBONNE, //
-				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, BOIS_DES_FILION) //
-				.addTripSort(MDirectionType.EAST.intValue(), //
-						Arrays.asList(new String[] { //
-						"85491", // rue Henry-Bessemer / rue Italia
-								"84006", // montée Gagnon / ch. du Souvenir
-								"84875", // Terminus Terrebonne
-						})) //
-				.addTripSort(MDirectionType.WEST.intValue(), //
-						Arrays.asList(new String[] { //
-						/* no stops */
-						})) //
-				.compileBothTripSort());
-		map2.put(403L, new RouteTripSpec(403L, //
-				0, MTrip.HEADSIGN_TYPE_STRING, "Gare Mascouche", //
-				1, MTrip.HEADSIGN_TYPE_STRING, "Anglais / Gascon") //
-				.addTripSort(0, // MDirectionType.EAST.intValue(), //
-						Arrays.asList(new String[] { //
-						"84994", // ch. des Anglais / ch. Gascon
-								"84570", // ++
-								"84700", // Gare Mascouche
-						})) //
-				.addTripSort(1, // MDirectionType.WEST.intValue(), //
-						Arrays.asList(new String[] { //
-						"84700", // Gare Mascouche
-								"84584", // ++
-								"84019", // ch des Anglais/ch. Gascon
 						})) //
 				.compileBothTripSort());
 		ALL_ROUTE_TRIPS2 = map2;
@@ -525,39 +320,56 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
 			return; // split
 		}
-		if (mRoute.getId() == 14L) {
-			String gTripHeadsignLC = gTrip.getTripHeadsign().toLowerCase(Locale.ENGLISH);
-			if (gTripHeadsignLC.endsWith("forum de la plaine")) {
-				mTrip.setHeadsignString("Forum De La Plaine", gTrip.getDirectionId());
-				return;
-			} else if (gTripHeadsignLC.endsWith("terrebonne")) {
-				mTrip.setHeadsignString(TERREBONNE, gTrip.getDirectionId());
-				return;
-			}
-			System.out.printf("\nUnexpected trip to split %s!\n", gTrip);
-			System.exit(-1);
-			return;
-		} else if (mRoute.getId() == 21L) {
-			String gTripHeadsignLC = gTrip.getTripHeadsign().toLowerCase(Locale.ENGLISH);
-			if (gTripHeadsignLC.endsWith("mascouche")) {
-				mTrip.setHeadsignString(MASCOUCHE, gTrip.getDirectionId());
-				return;
-			} else if (gTripHeadsignLC.endsWith("terrebonne") //
-					|| gTripHeadsignLC.endsWith("terrebonne am") //
-					|| gTripHeadsignLC.endsWith("terrebonne pm")) {
-				mTrip.setHeadsignString(TERREBONNE, gTrip.getDirectionId());
-				return;
-			}
-			System.out.printf("\nUnexpected trip to split %s!\n", gTrip);
-			System.exit(-1);
-			return;
-		}
 		mTrip.setHeadsignString(cleanTripHeadsign(gTrip.getTripHeadsign()), gTrip.getDirectionId());
 	}
 
 	@Override
 	public boolean mergeHeadsign(MTrip mTrip, MTrip mTripToMerge) {
 		List<String> headsignsValues = Arrays.asList(mTrip.getHeadsignValue(), mTripToMerge.getHeadsignValue());
+		if (mTrip.getRouteId() == 1L) {
+			if (Arrays.asList( //
+					"Mascouche / Gascon & De La Pinière", //
+					"Mascouche / Term Terrebonne" //
+			).containsAll(headsignsValues)) {
+				mTrip.setHeadsignString("Mascouche / Term Terrebonne", mTrip.getHeadsignId());
+				return true;
+			}
+			if (Arrays.asList( //
+					"Pinière / Cologne", //
+					"Mascouche / Term Terrebonne" //
+			).containsAll(headsignsValues)) {
+				mTrip.setHeadsignString("Mascouche / Term Terrebonne", mTrip.getHeadsignId());
+				return true;
+			}
+		}
+		if (mTrip.getRouteId() == 2L) {
+			if (Arrays.asList( //
+					"Anglais / O'diana", //
+					"Terrebonne / Mascouche" //
+			).containsAll(headsignsValues)) {
+				mTrip.setHeadsignString("Terrebonne / Mascouche", mTrip.getHeadsignId());
+				return true;
+			}
+		}
+		if (mTrip.getRouteId() == 5L) {
+			if (Arrays.asList( //
+					"Industriel / Jacques Paschini", //
+					"Souvenir / Gagnon", //
+					"Terrebonne / Bois-Des-Filion" //
+			).containsAll(headsignsValues)) {
+				mTrip.setHeadsignString("Terrebonne / Bois-Des-Filion", mTrip.getHeadsignId());
+				return true;
+			}
+		}
+		if (mTrip.getRouteId() == 8L) {
+			if (Arrays.asList( //
+					"Angora / Hansen", //
+					"Term Terrebonne" //
+			).containsAll(headsignsValues)) {
+				mTrip.setHeadsignString("Term Terrebonne", mTrip.getHeadsignId());
+				return true;
+			}
+		}
 		if (mTrip.getRouteId() == 9L) {
 			if (Arrays.asList( //
 					"Souvenir / Gagnon", //
@@ -574,6 +386,22 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 					TERMINUS_TERREBONNE //
 					).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString(TERMINUS_TERREBONNE, mTrip.getHeadsignId());
+				return true;
+			}
+		} else if (mTrip.getRouteId() == 18L) {
+			if (Arrays.asList( //
+					"Angora / Gascon", //
+					"Terrebonne / Cegep De Terrebonne" //
+					).containsAll(headsignsValues)) {
+				mTrip.setHeadsignString("Terrebonne / Cegep De Terrebonne", mTrip.getHeadsignId());
+				return true;
+			}
+		} else if (mTrip.getRouteId() == RID_STARTS_WITH_T + 24L) { // T24
+			if (Arrays.asList( //
+					"Terrebonne / Gascon", //
+					"Terrebonne / Valiquette" //
+					).containsAll(headsignsValues)) {
+				mTrip.setHeadsignString("Terrebonne / Valiquette", mTrip.getHeadsignId());
 				return true;
 			}
 		} else if (mTrip.getRouteId() == 25L) {
@@ -593,9 +421,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 				return true;
 			}
 		}
-		System.out.printf("\nUnexpected trips to merge %s & %s!\n", mTrip, mTripToMerge);
-		System.exit(-1);
-		return false;
+		throw new MTLog.Fatal("Unexpected trips to merge %s & %s!", mTrip, mTripToMerge);
 	}
 
 	private static final Pattern DIRECTION = Pattern.compile("(direction )", Pattern.CASE_INSENSITIVE);
@@ -688,9 +514,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 			} else if (gStop.getStopId().startsWith("TER")) {
 				stopId = 200000;
 			} else {
-				System.out.printf("\nStop doesn't have an ID (start with) %s!\n", gStop);
-				System.exit(-1);
-				stopId = -1;
+				throw new MTLog.Fatal("Stop doesn't have an ID (start with) %s!", gStop);
 			}
 			if (gStop.getStopId().endsWith("A")) {
 				stopId += 1000;
@@ -703,13 +527,10 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 			} else if (gStop.getStopId().endsWith("G")) {
 				stopId += 7000;
 			} else {
-				System.out.printf("\nStop doesn't have an ID (end with) %s!\n", gStop);
-				System.exit(-1);
+				throw new MTLog.Fatal("Stop doesn't have an ID (end with) %s!", gStop);
 			}
 			return stopId + digits;
 		}
-		System.out.printf("\nUnexpected stop ID for %s!\n", gStop);
-		System.exit(-1);
-		return -1;
+		throw new MTLog.Fatal("Unexpected stop ID for %s!", gStop);
 	}
 }
