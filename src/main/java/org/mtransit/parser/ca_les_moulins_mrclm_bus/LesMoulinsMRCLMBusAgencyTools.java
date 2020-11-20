@@ -224,23 +224,20 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	}
 
 	private static final String TERMINUS_SHORT = "Term";
-	private static final String BOIS_DES_FILION = "Bois-Des-Filion";
-	private static final String MASCOUCHE = "Mascouche";
 	private static final String TERREBONNE = "Terrebonne";
 	private static final String HENRI_BOURASSA = "Henri-Bourassa";
-	private static final String CÉGEP = "Cégep";
 	private static final String TERMINUS_HENRI_BOURASSA = TERMINUS_SHORT + " " + HENRI_BOURASSA;
 	private static final String TERMINUS_TERREBONNE = TERMINUS_SHORT + " " + TERREBONNE;
 	private static final String CITE_DU_SPORT = "Cite Du Sport";
 
-	private static HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
+	private static final HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
 	static {
-		HashMap<Long, RouteTripSpec> map2 = new HashMap<Long, RouteTripSpec>();
+		HashMap<Long, RouteTripSpec> map2 = new HashMap<>();
 		map2.put(18L, new RouteTripSpec(18L, // BECAUSE SAME HEAD-SIGNs
 				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERMINUS_TERREBONNE, //
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Cité du Sport") //
 				.addTripSort(MDirectionType.EAST.intValue(), //
-						Arrays.asList(new String[] { //
+						Arrays.asList( //
 						"85782", // Cité du Sport
 								"84106", // rue des Bâtisseurs / face au 3100
 								// "84872", // ++
@@ -251,10 +248,10 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 								"85030", // !===
 								"84889", // !===
 								"84837", // !===
-								"84875", // == Terminus Terrebonne
-						})) //
+								"84875" // == Terminus Terrebonne
+						)) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
-						Arrays.asList(new String[] { //
+						Arrays.asList( //
 						"84875", // == Terminus Terrebonne
 								"84943", // !=== boul. des Seigneurs / rue Vaillant
 								"85117", // != !=
@@ -263,24 +260,24 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 								"84845", // !=== boul. Moody / face aux Galeries Terrebonne
 								"84998", // != rue Angora / ch. Gasco
 								"85150", // !=== boul. des Entreprises / boul. Claude Léveillée
-								"85782", // == Cité du Sport
-						})) //
+								"85782" // == Cité du Sport
+						)) //
 				.compileBothTripSort());
 		map2.put(24L + RID_STARTS_WITH_T, new RouteTripSpec(24L + RID_STARTS_WITH_T, // T24 // BECAUSe SAME HEAD-SIGNs
 				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Gascon", // Terrebonne
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Place Longchamps") // Terrebonne
 				.addTripSort(MDirectionType.EAST.intValue(), //
-						Arrays.asList(new String[] { //
+						Arrays.asList( //
 						"85125", // ch. Martin / montée Valiquette
 								"85135", // ++
-								"84870", // ch. Gascon / face au 3620
-						})) //
+								"84870" // ch. Gascon / face au 3620
+						)) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
-						Arrays.asList(new String[] { //
+						Arrays.asList( //
 						"85131", // Comptois / Gascon (Restaurant au nid garni )
 								"85134", // ++
-								"85126", // montée Valiquette / ch. Martin
-						})) //
+								"85126" // montée Valiquette / ch. Martin
+						)) //
 				.compileBothTripSort());
 		ALL_ROUTE_TRIPS2 = map2;
 	}
@@ -345,6 +342,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		if (mTrip.getRouteId() == 2L) {
 			if (Arrays.asList( //
 					"Anglais / O'diana", //
+					"Anglais / O'Diana", //
 					"Terrebonne / Mascouche" //
 			).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString("Terrebonne / Mascouche", mTrip.getHeadsignId());
@@ -462,11 +460,11 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		return CleanUtils.cleanLabelFR(tripHeadsign);
 	}
 
-	private static final Pattern START_WITH_FACE_A = Pattern.compile("^(face à )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+	private static final Pattern START_WITH_FACE_A = Pattern.compile("^(face à )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE | Pattern.CANON_EQ);
 	private static final Pattern START_WITH_FACE_AU = Pattern.compile("^(face au )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 	private static final Pattern START_WITH_FACE = Pattern.compile("^(face )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
-	private static final Pattern SPACE_FACE_A = Pattern.compile("( face à )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+	private static final Pattern SPACE_FACE_A = Pattern.compile("( face à )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE | Pattern.CANON_EQ);
 	private static final Pattern SPACE_WITH_FACE_AU = Pattern.compile("( face au )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 	private static final Pattern SPACE_WITH_FACE = Pattern.compile("( face )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
