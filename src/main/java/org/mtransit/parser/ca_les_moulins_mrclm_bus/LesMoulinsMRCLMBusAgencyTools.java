@@ -1,21 +1,14 @@
 package org.mtransit.parser.ca_les_moulins_mrclm_bus;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.mtransit.parser.CleanUtils;
 import org.mtransit.parser.DefaultAgencyTools;
 import org.mtransit.parser.MTLog;
 import org.mtransit.parser.Pair;
 import org.mtransit.parser.SplitUtils;
 import org.mtransit.parser.SplitUtils.RouteTripSpec;
+import org.mtransit.parser.StringUtils;
 import org.mtransit.parser.Utils;
 import org.mtransit.parser.gtfs.data.GCalendar;
 import org.mtransit.parser.gtfs.data.GCalendarDate;
@@ -30,11 +23,19 @@ import org.mtransit.parser.mt.data.MRoute;
 import org.mtransit.parser.mt.data.MTrip;
 import org.mtransit.parser.mt.data.MTripStop;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 // https://exo.quebec/en/about/open-data
 // https://exo.quebec/xdata/mrclm/google_transit.zip
 public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 
-	public static void main(String[] args) {
+	public static void main(@Nullable String[] args) {
 		if (args == null || args.length == 0) {
 			args = new String[3];
 			args[0] = "input/gtfs.zip";
@@ -44,46 +45,48 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		new LesMoulinsMRCLMBusAgencyTools().start(args);
 	}
 
-	private HashSet<Integer> serviceIds;
+	@Nullable
+	private HashSet<Integer> serviceIdInts;
 
 	@Override
-	public void start(String[] args) {
+	public void start(@NotNull String[] args) {
 		MTLog.log("Generating MRCLM bus data...");
 		long start = System.currentTimeMillis();
-		this.serviceIds = extractUsefulServiceIdInts(args, this, true);
+		this.serviceIdInts = extractUsefulServiceIdInts(args, this, true);
 		super.start(args);
 		MTLog.log("Generating MRCLM bus data... DONE in %s.", Utils.getPrettyDuration(System.currentTimeMillis() - start));
 	}
 
 	@Override
 	public boolean excludingAll() {
-		return this.serviceIds != null && this.serviceIds.isEmpty();
+		return this.serviceIdInts != null && this.serviceIdInts.isEmpty();
 	}
 
 	@Override
-	public boolean excludeCalendar(GCalendar gCalendar) {
-		if (this.serviceIds != null) {
-			return excludeUselessCalendarInt(gCalendar, this.serviceIds);
+	public boolean excludeCalendar(@NotNull GCalendar gCalendar) {
+		if (this.serviceIdInts != null) {
+			return excludeUselessCalendarInt(gCalendar, this.serviceIdInts);
 		}
 		return super.excludeCalendar(gCalendar);
 	}
 
 	@Override
-	public boolean excludeCalendarDate(GCalendarDate gCalendarDates) {
-		if (this.serviceIds != null) {
-			return excludeUselessCalendarDateInt(gCalendarDates, this.serviceIds);
+	public boolean excludeCalendarDate(@NotNull GCalendarDate gCalendarDates) {
+		if (this.serviceIdInts != null) {
+			return excludeUselessCalendarDateInt(gCalendarDates, this.serviceIdInts);
 		}
 		return super.excludeCalendarDate(gCalendarDates);
 	}
 
 	@Override
-	public boolean excludeTrip(GTrip gTrip) {
-		if (this.serviceIds != null) {
-			return excludeUselessTripInt(gTrip, this.serviceIds);
+	public boolean excludeTrip(@NotNull GTrip gTrip) {
+		if (this.serviceIdInts != null) {
+			return excludeUselessTripInt(gTrip, this.serviceIdInts);
 		}
 		return super.excludeTrip(gTrip);
 	}
 
+	@NotNull
 	@Override
 	public Integer getAgencyRouteType() {
 		return MAgency.ROUTE_TYPE_BUS;
@@ -92,9 +95,10 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	private static final Pattern SECTEUR = Pattern.compile("(secteur[s]? )", Pattern.CASE_INSENSITIVE);
 	private static final String SECTEUR_REPLACEMENT = "";
 
+	@NotNull
 	@Override
-	public String getRouteLongName(GRoute gRoute) {
-		String routeLongName = gRoute.getRouteLongName();
+	public String getRouteLongName(@NotNull GRoute gRoute) {
+		String routeLongName = gRoute.getRouteLongNameOrDefault();
 		routeLongName = CleanUtils.SAINT.matcher(routeLongName).replaceAll(CleanUtils.SAINT_REPLACEMENT);
 		routeLongName = SECTEUR.matcher(routeLongName).replaceAll(SECTEUR_REPLACEMENT);
 		return CleanUtils.cleanLabel(routeLongName);
@@ -124,7 +128,8 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	private static final long RID_EXPR = 99_003L;
 
 	@Override
-	public long getRouteId(GRoute gRoute) {
+	public long getRouteId(@NotNull GRoute gRoute) {
+		//noinspection deprecation
 		if (!Utils.isDigitsOnly(gRoute.getRouteId())) {
 			if (RSN_EXPH.equalsIgnoreCase(gRoute.getRouteShortName())) {
 				return RID_EXPH;
@@ -157,17 +162,21 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 
 	private static final String AGENCY_COLOR = "1F1F1F"; // DARK GRAY (from GTFS)
 
+	@NotNull
 	@Override
 	public String getAgencyColor() {
 		return AGENCY_COLOR;
 	}
 
+	@SuppressWarnings("DuplicateBranchesInSwitch")
+	@Nullable
 	@Override
-	public String getRouteColor(GRoute gRoute) {
+	public String getRouteColor(@NotNull GRoute gRoute) {
 		if (StringUtils.isEmpty(gRoute.getRouteColor())) {
 			if ("24C".equalsIgnoreCase(gRoute.getRouteShortName())) {
 				return "754740";
 			}
+			//noinspection deprecation
 			Matcher matcher = DIGITS.matcher(gRoute.getRouteId());
 			if (matcher.find()) {
 				int rid = Integer.parseInt(matcher.group());
@@ -231,14 +240,16 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	private static final String CITE_DU_SPORT = "Cite Du Sport";
 
 	private static final HashMap<Long, RouteTripSpec> ALL_ROUTE_TRIPS2;
+
 	static {
 		HashMap<Long, RouteTripSpec> map2 = new HashMap<>();
+		//noinspection deprecation
 		map2.put(18L, new RouteTripSpec(18L, // BECAUSE SAME HEAD-SIGNs
 				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, TERMINUS_TERREBONNE, //
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Cité du Sport") //
 				.addTripSort(MDirectionType.EAST.intValue(), //
 						Arrays.asList( //
-						"85782", // Cité du Sport
+								"85782", // Cité du Sport
 								"84106", // rue des Bâtisseurs / face au 3100
 								// "84872", // ++
 								"84728", // ==
@@ -252,7 +263,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 						)) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
 						Arrays.asList( //
-						"84875", // == Terminus Terrebonne
+								"84875", // == Terminus Terrebonne
 								"84943", // !=== boul. des Seigneurs / rue Vaillant
 								"85117", // != !=
 								"85482", // != <>
@@ -263,18 +274,19 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 								"85782" // == Cité du Sport
 						)) //
 				.compileBothTripSort());
+		//noinspection deprecation
 		map2.put(24L + RID_STARTS_WITH_T, new RouteTripSpec(24L + RID_STARTS_WITH_T, // T24 // BECAUSe SAME HEAD-SIGNs
 				MDirectionType.EAST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Gascon", // Terrebonne
 				MDirectionType.WEST.intValue(), MTrip.HEADSIGN_TYPE_STRING, "Place Longchamps") // Terrebonne
 				.addTripSort(MDirectionType.EAST.intValue(), //
 						Arrays.asList( //
-						"85125", // ch. Martin / montée Valiquette
+								"85125", // ch. Martin / montée Valiquette
 								"85135", // ++
 								"84870" // ch. Gascon / face au 3620
 						)) //
 				.addTripSort(MDirectionType.WEST.intValue(), //
 						Arrays.asList( //
-						"85131", // Comptois / Gascon (Restaurant au nid garni )
+								"85131", // Comptois / Gascon (Restaurant au nid garni )
 								"85134", // ++
 								"85126" // montée Valiquette / ch. Martin
 						)) //
@@ -282,30 +294,33 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		ALL_ROUTE_TRIPS2 = map2;
 	}
 
+	@NotNull
 	@Override
-	public String cleanStopOriginalId(String gStopId) {
+	public String cleanStopOriginalId(@NotNull String gStopId) {
 		gStopId = CleanUtils.cleanMergedID(gStopId);
 		return gStopId;
 	}
 
 	@Override
-	public int compareEarly(long routeId, List<MTripStop> list1, List<MTripStop> list2, MTripStop ts1, MTripStop ts2, GStop ts1GStop, GStop ts2GStop) {
+	public int compareEarly(long routeId, @NotNull List<MTripStop> list1, @NotNull List<MTripStop> list2, @NotNull MTripStop ts1, @NotNull MTripStop ts2, @NotNull GStop ts1GStop, @NotNull GStop ts2GStop) {
 		if (ALL_ROUTE_TRIPS2.containsKey(routeId)) {
 			return ALL_ROUTE_TRIPS2.get(routeId).compare(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop, this);
 		}
 		return super.compareEarly(routeId, list1, list2, ts1, ts2, ts1GStop, ts2GStop);
 	}
 
+	@NotNull
 	@Override
-	public ArrayList<MTrip> splitTrip(MRoute mRoute, GTrip gTrip, GSpec gtfs) {
+	public ArrayList<MTrip> splitTrip(@NotNull MRoute mRoute, @Nullable GTrip gTrip, @NotNull GSpec gtfs) {
 		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
 			return ALL_ROUTE_TRIPS2.get(mRoute.getId()).getAllTrips();
 		}
 		return super.splitTrip(mRoute, gTrip, gtfs);
 	}
 
+	@NotNull
 	@Override
-	public Pair<Long[], Integer[]> splitTripStop(MRoute mRoute, GTrip gTrip, GTripStop gTripStop, ArrayList<MTrip> splitTrips, GSpec routeGTFS) {
+	public Pair<Long[], Integer[]> splitTripStop(@NotNull MRoute mRoute, @NotNull GTrip gTrip, @NotNull GTripStop gTripStop, @NotNull ArrayList<MTrip> splitTrips, @NotNull GSpec routeGTFS) {
 		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
 			return SplitUtils.splitTripStop(mRoute, gTrip, gTripStop, routeGTFS, ALL_ROUTE_TRIPS2.get(mRoute.getId()), this);
 		}
@@ -313,15 +328,18 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	}
 
 	@Override
-	public void setTripHeadsign(MRoute mRoute, MTrip mTrip, GTrip gTrip, GSpec gtfs) {
+	public void setTripHeadsign(@NotNull MRoute mRoute, @NotNull MTrip mTrip, @NotNull GTrip gTrip, @NotNull GSpec gtfs) {
 		if (ALL_ROUTE_TRIPS2.containsKey(mRoute.getId())) {
 			return; // split
 		}
-		mTrip.setHeadsignString(cleanTripHeadsign(gTrip.getTripHeadsign()), gTrip.getDirectionId());
+		mTrip.setHeadsignString(
+				cleanTripHeadsign(gTrip.getTripHeadsignOrDefault()),
+				gTrip.getDirectionIdOrDefault()
+		);
 	}
 
 	@Override
-	public boolean mergeHeadsign(MTrip mTrip, MTrip mTripToMerge) {
+	public boolean mergeHeadsign(@NotNull MTrip mTrip, @NotNull MTrip mTripToMerge) {
 		List<String> headsignsValues = Arrays.asList(mTrip.getHeadsignValue(), mTripToMerge.getHeadsignValue());
 		if (mTrip.getRouteId() == 1L) {
 			if (Arrays.asList( //
@@ -382,7 +400,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 					"Cité Du Sport", //
 					TERREBONNE + " " + CITE_DU_SPORT, //
 					TERMINUS_TERREBONNE //
-					).containsAll(headsignsValues)) {
+			).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString(TERMINUS_TERREBONNE, mTrip.getHeadsignId());
 				return true;
 			}
@@ -390,7 +408,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 			if (Arrays.asList( //
 					"Angora / Gascon", //
 					"Terrebonne / Cegep De Terrebonne" //
-					).containsAll(headsignsValues)) {
+			).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString("Terrebonne / Cegep De Terrebonne", mTrip.getHeadsignId());
 				return true;
 			}
@@ -398,7 +416,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 			if (Arrays.asList( //
 					"Terrebonne / Gascon", //
 					"Terrebonne / Valiquette" //
-					).containsAll(headsignsValues)) {
+			).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString("Terrebonne / Valiquette", mTrip.getHeadsignId());
 				return true;
 			}
@@ -406,7 +424,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 			if (Arrays.asList( //
 					"St-Julien / Amos", //
 					TERMINUS_HENRI_BOURASSA //
-					).containsAll(headsignsValues)) {
+			).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString(TERMINUS_HENRI_BOURASSA, mTrip.getHeadsignId());
 				return true;
 			}
@@ -414,7 +432,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 			if (Arrays.asList( //
 					"Terrebonne / Pinière & Sobeys", //
 					TERMINUS_TERREBONNE //
-					).containsAll(headsignsValues)) {
+			).containsAll(headsignsValues)) {
 				mTrip.setHeadsignString(TERMINUS_TERREBONNE, mTrip.getHeadsignId());
 				return true;
 			}
@@ -443,11 +461,9 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	private static final Pattern ENDS_WITH_AM_PM = Pattern.compile("( (am|pm)$)", Pattern.CASE_INSENSITIVE);
 	private static final String ENDS_WITH_AM_PM_REPLACEMENT = StringUtils.EMPTY;
 
+	@NotNull
 	@Override
-	public String cleanTripHeadsign(String tripHeadsign) {
-		if (Utils.isUppercaseOnly(tripHeadsign, true, true)) {
-			tripHeadsign = tripHeadsign.toLowerCase(Locale.FRENCH);
-		}
+	public String cleanTripHeadsign(@NotNull String tripHeadsign) {
 		tripHeadsign = ENDS_WITH_AM_PM.matcher(tripHeadsign).replaceAll(ENDS_WITH_AM_PM_REPLACEMENT);
 		tripHeadsign = DIRECTION.matcher(tripHeadsign).replaceAll(DIRECTION_REPLACEMENT);
 		tripHeadsign = EXPRESS_.matcher(tripHeadsign).replaceAll(EXPRESS_REPLACEMENT);
@@ -468,15 +484,16 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	private static final Pattern SPACE_WITH_FACE_AU = Pattern.compile("( face au )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 	private static final Pattern SPACE_WITH_FACE = Pattern.compile("( face )", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 
-	private static final Pattern[] START_WITH_FACES = new Pattern[] { START_WITH_FACE_A, START_WITH_FACE_AU, START_WITH_FACE };
+	private static final Pattern[] START_WITH_FACES = new Pattern[]{START_WITH_FACE_A, START_WITH_FACE_AU, START_WITH_FACE};
 
-	private static final Pattern[] SPACE_FACES = new Pattern[] { SPACE_FACE_A, SPACE_WITH_FACE_AU, SPACE_WITH_FACE };
+	private static final Pattern[] SPACE_FACES = new Pattern[]{SPACE_FACE_A, SPACE_WITH_FACE_AU, SPACE_WITH_FACE};
 
 	private static final Pattern AVENUE = Pattern.compile("( avenue)", Pattern.CASE_INSENSITIVE);
 	private static final String AVENUE_REPLACEMENT = " av.";
 
+	@NotNull
 	@Override
-	public String cleanStopName(String gStopName) {
+	public String cleanStopName(@NotNull String gStopName) {
 		gStopName = AVENUE.matcher(gStopName).replaceAll(AVENUE_REPLACEMENT);
 		gStopName = Utils.replaceAll(gStopName, START_WITH_FACES, CleanUtils.SPACE);
 		gStopName = Utils.replaceAll(gStopName, SPACE_FACES, CleanUtils.SPACE);
@@ -484,10 +501,11 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		return CleanUtils.cleanLabelFR(gStopName);
 	}
 
+	@NotNull
 	@Override
-	public String getStopCode(GStop gStop) {
+	public String getStopCode(@NotNull GStop gStop) {
 		if ("0".equals(gStop.getStopCode())) {
-			return null;
+			return StringUtils.EMPTY;
 		}
 		return super.getStopCode(gStop);
 	}
@@ -495,35 +513,37 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	private static final Pattern DIGITS = Pattern.compile("[\\d]+");
 
 	@Override
-	public int getStopId(GStop gStop) {
-		if (gStop.getStopId().equals("LPL105A")) {
+	public int getStopId(@NotNull GStop gStop) {
+		//noinspection deprecation
+		final String stopId1 = gStop.getStopId();
+		if (stopId1.equals("LPL105A")) {
 			return 84315;
 		}
 		String stopCode = getStopCode(gStop);
-		if (stopCode != null && stopCode.length() > 0) {
-			return Integer.valueOf(stopCode); // using stop code as stop ID
+		if (stopCode.length() > 0) {
+			return Integer.parseInt(stopCode); // using stop code as stop ID
 		}
-		Matcher matcher = DIGITS.matcher(gStop.getStopId());
+		Matcher matcher = DIGITS.matcher(stopId1);
 		if (matcher.find()) {
 			int digits = Integer.parseInt(matcher.group());
 			int stopId;
-			if (gStop.getStopId().startsWith("MAS")) {
-				stopId = 100000;
-			} else if (gStop.getStopId().startsWith("TER")) {
-				stopId = 200000;
+			if (stopId1.startsWith("MAS")) {
+				stopId = 100_000;
+			} else if (stopId1.startsWith("TER")) {
+				stopId = 200_000;
 			} else {
 				throw new MTLog.Fatal("Stop doesn't have an ID (start with) %s!", gStop);
 			}
-			if (gStop.getStopId().endsWith("A")) {
-				stopId += 1000;
-			} else if (gStop.getStopId().endsWith("B")) {
-				stopId += 2000;
-			} else if (gStop.getStopId().endsWith("C")) {
-				stopId += 3000;
-			} else if (gStop.getStopId().endsWith("D")) {
-				stopId += 4000;
-			} else if (gStop.getStopId().endsWith("G")) {
-				stopId += 7000;
+			if (stopId1.endsWith("A")) {
+				stopId += 1_000;
+			} else if (stopId1.endsWith("B")) {
+				stopId += 2_000;
+			} else if (stopId1.endsWith("C")) {
+				stopId += 3_000;
+			} else if (stopId1.endsWith("D")) {
+				stopId += 4_000;
+			} else if (stopId1.endsWith("G")) {
+				stopId += 7_000;
 			} else {
 				throw new MTLog.Fatal("Stop doesn't have an ID (end with) %s!", gStop);
 			}
