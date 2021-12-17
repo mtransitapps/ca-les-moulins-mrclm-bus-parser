@@ -11,6 +11,7 @@ import org.mtransit.parser.DefaultAgencyTools;
 import org.mtransit.parser.MTLog;
 import org.mtransit.parser.gtfs.data.GStop;
 import org.mtransit.parser.mt.data.MAgency;
+import org.mtransit.parser.mt.data.MRouteSNToIDConverter;
 
 import java.util.List;
 import java.util.Locale;
@@ -69,6 +70,16 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public boolean useRouteShortNameForRouteId() {
 		return true;
+	}
+
+	@Nullable
+	@Override
+	public Long convertRouteIdPreviousChars(@NotNull String previousChars) {
+		switch (previousChars) {
+		case "MT":
+			return MRouteSNToIDConverter.startsWith(MRouteSNToIDConverter.other(1L));
+		}
+		return super.convertRouteIdPreviousChars(previousChars);
 	}
 
 	@Override
