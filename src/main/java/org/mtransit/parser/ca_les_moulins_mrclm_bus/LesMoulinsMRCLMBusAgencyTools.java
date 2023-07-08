@@ -9,6 +9,7 @@ import org.mtransit.commons.CleanUtils;
 import org.mtransit.commons.RegexUtils;
 import org.mtransit.parser.DefaultAgencyTools;
 import org.mtransit.parser.MTLog;
+import org.mtransit.parser.gtfs.data.GRoute;
 import org.mtransit.parser.gtfs.data.GStop;
 import org.mtransit.parser.mt.data.MAgency;
 import org.mtransit.parser.mt.data.MRouteSNToIDConverter;
@@ -19,7 +20,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 // https://exo.quebec/en/about/open-data
-// https://exo.quebec/xdata/mrclm/google_transit.zip
 public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 
 	public static void main(@NotNull String[] args) {
@@ -70,6 +70,12 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 	@Override
 	public boolean useRouteShortNameForRouteId() {
 		return true;
+	}
+
+	@NotNull
+	@Override
+	public String getRouteShortName(@NotNull GRoute gRoute) {
+		return gRoute.getRouteShortName(); // used by GTFS-RT
 	}
 
 	@Nullable
@@ -136,7 +142,7 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 
 	private static final Pattern DEVANT_ = CleanUtils.cleanWordsFR("devant");
 
-	private static final Pattern CIVIQUE_ = Pattern.compile("((^|\\W)(" + "civique #([\\d]+)" + ")(\\W|$))", Pattern.CASE_INSENSITIVE);
+	private static final Pattern CIVIQUE_ = Pattern.compile("((^|\\W)(" + "civique #(\\d+)" + ")(\\W|$))", Pattern.CASE_INSENSITIVE);
 	private static final String CIVIQUE_REPLACEMENT = "$2" + "#$4" + "$5";
 
 	@NotNull
@@ -157,7 +163,8 @@ public class LesMoulinsMRCLMBusAgencyTools extends DefaultAgencyTools {
 		if ("0".equals(gStop.getStopCode())) {
 			return EMPTY;
 		}
-		return super.getStopCode(gStop);
+		//noinspection deprecation
+		return gStop.getStopId(); // used by GTFS-RT
 	}
 
 	@Override
